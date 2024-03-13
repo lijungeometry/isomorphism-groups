@@ -1,0 +1,87 @@
+.\" lowindex isom.d/man/man1 file lowindex.1
+.\" @(#)date.1v 1.11 88/02/25 SMI;
+.TH lowindex 1 "28 January 1994" "Geometry Group" "Geometry Group's manual"
+.SH NAME
+lowindex \- find  subgroups of low index in a finitely presented group
+.SH SYNOPSIS
+.B lowindex
+[
+.B \-m
+.I maxindex
+]
+[
+.B \-n
+.I maxsubs
+]
+[
+.B \-t
+.I maxtime
+]
+.I gpname
+.SH DESCRIPTION
+.B lowindex
+is merely a filter which calls up code written by Martin Schoenert in Aachen.
+It takes input from the file
+.I gpname,
+or from
+.I gpname\fP.ordrels
+if the latter file is present,
+which should contain a finite presentation of a group
+.I G.
+It is recommended that
+.br
+.B ordrels
+.I gpname
+.br
+be run before running
+.B lowindex,
+because this usually results in
+.B lowindex running more efficiently.
+.B lowindex finds all conjugacy classes of subgroups of
+.I G
+of index at most
+.I maxindex,
+which is equal to 10 by default.
+The output consists of the permutation representations of
+.I G
+on the right cosets of the subgroups found, one file for each subgroup.
+The files are named
+\fIgpname.\fPli_permim\fIn\fP, for
+.I n
+= 1,2,3,... .
+The order of permutations output is as in the file
+.I gpname
+and not as in
+.I gpname\fP.ordrels,
+in order to maintain compatibility with other programs.
+.SH OPTIONS
+.IP \fB\-m\fP
+.I maxind
+Find all subgroups up to index
+.I maxind
+(10 by default).
+.IP \fB\-n\fP
+.I maxsubs
+.br
+Stop if more than
+.I
+maxsubs subgroups are found.
+.IP \fB\-t
+.I maxtime
+.br
+Stop (and give up, writing a message to stderr) after
+.I maxtime
+seconds.
+.SH SEE ALSO
+.B permim(1)
+.br
+.B ordrels(1)
+.br
+.B quotpic(1)
+.SH DIAGNOSTICS
+Exit code is normally 0, even if the program exits through lack of time or
+space. It is 2 if the command-line is wrong, or if there is an error in
+reading the input files or data.
+.SH ACKNOWLEDGEMENT
+This program invokes Martin Schoenert's Aachen implementation of the
+low index subgroup algorithm.

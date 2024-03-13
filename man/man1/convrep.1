@@ -1,0 +1,111 @@
+.\" convrep isom.d/man/man1 file convrep.1
+.\" @(#)date.1v 1.11 88/02/25 SMI;
+.TH convrep 1 "27 January 1994" "Geometry Group" "Geometry Group's manual"
+.SH NAME
+convrep \- compute a different permutation representation of a permutation group
+.SH SYNOPSIS
+.B convrep
+[
+.B \-m
+maxopdeg
+]
+permgpname
+[
+.I inf1
+]
+[
+.I inf2
+]
+[
+.I outf
+]
+.SH DESCRIPTION
+.B convrep
+takes input from the files
+.I permgpname,
+.I permgpname.inf1,
+and
+.I permgpname.inf2,
+and outputs to
+.I permgpname.outf.
+(Default values for
+.I inf1, inf2
+and
+.I outf
+are sg, \-t and reg, respectively.)
+.I permgpname
+should contain generators for a permutation group
+.I P,
+( as output by
+.B permim(1),
+.B lowindex(1),
+or
+.B subpquot(1),
+.B subabquot(1),
+or
+.B lcs(1)
+with the
+.B \-p
+option, for example).
+.I permgpname.inf1
+should contain a base and strong generating set for the same group.
+This will normally be the output of
+.B sg(1)
+applied to
+.I permgpname.
+.I permgpname.inf2
+should contain a base (the same base) and strong generating set for a subgroup
+.I Q
+of
+.I P,
+but if 
+.B \-t
+is used for
+.I inf2,
+then the trivial subgroup will be used. (In fact, since there are currently
+no facilities for defining subgroups of permutation groups,
+.B \-t
+will normally be used here, and
+.B \-t
+is the default for
+.I inf2.)
+.PP
+.B convrep
+converts the permutations in
+.I permgpname
+to their representation on the cosets of the subgroup
+.I Q
+and,
+provided that the degree of this representation is not greater than
+.I maxopdeg
+(default is 9999),
+it outputs to
+.I permgpname.outf.
+Thus, if
+.B \-t
+is used for
+.I inf2,
+then they are converted to their action in the regular permutation
+representation.
+.SH OPTIONS
+.IP \fB\-m
+.I m.
+.br
+Set the value of
+.I maxopdeg
+equal to
+.I m.
+.SH SEE ALSO
+.B permim(1)
+.br
+.B lowindex(1)
+.br
+.B subpquot(1)
+.br
+.B subabquot(1)
+.br
+.B lcs(1)
+.br
+.B sg(1)
+.SH DIAGNOSTICS
+Exit code is 0 if successful and 2 otherwise.

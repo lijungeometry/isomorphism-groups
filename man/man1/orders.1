@@ -1,0 +1,63 @@
+.\" orders isom.d/man/man1 file orders.1
+.\" @(#)date.1v 1.11 88/02/25 SMI;
+.TH orders 1 "8 July 1991" "Geometry Group" "Geometry Group's manual"
+.SH NAME
+orders \- compute the orders of the elements of a regular permutation group
+.SH SYNOPSIS
+.B orders
+[
+.B \-c
+]
+[
+.I permgpname
+]
+.SH DESCRIPTION
+.B orders
+takes input from the file
+.I permgpname
+if this is specified, and from standard input otherwise.
+Output is to the file
+\fIpermgpname\fP.orders by default in the first case and to standard output
+in the second.
+The input should contain generators of a regular permutation group
+(as output by
+.B convrep(1),
+or
+.B subpquot(1),
+.B subabquot(1)
+or
+.B lcs(1)
+with the
+.B \-p
+option, for example).
+The output contains a Format header, and then an
+.I orders
+section containing a list of the numbers of elements of each order in the
+group. (For example, an entry
+.nf
+3: 20
+.fi
+means that there are 20 elements of order 3.)
+This output is used by
+.B testisom(1)
+as a means of proving that two groups are not isomorphic.
+.PP
+.B Warning.
+If the permutation group defined is not regular, then the output
+will be incorrect.
+.SH OPTIONS
+.IP \fB\-c
+Check that the permutation group is regular. This makes the program run
+considerably slower.
+.SH SEE ALSO
+.B convrep(1)
+.br
+.B subpquot(1)
+.br
+.B subabquot(1)
+.br
+.B lcs(1)
+.br
+.B testisom(1)
+.SH DIAGNOSTICS
+Exit code is 0 if successful and 2 otherwise.

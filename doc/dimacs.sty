@@ -1,0 +1,31 @@
+%-----------------------------------------------------------------------------
+% Beginning of dimacs.sty
+%-----------------------------------------------------------------------------
+
+%  First input the preprint style
+
+\def\next{AMS-P}\ifx\styname\next \endinput
+  \else\input ams-p.sty\fi
+
+\catcode`\@=11
+
+\def\jourlogo{%
+	\def\rightheadline{\vtop to 0pt{%
+        \sixrm \baselineskip7pt
+        \parindent0pt \frenchspacing
+        DIMACS Series in Discrete Mathematics\newline
+        and Theoretical Computer Science\newline
+        Volume {\sixbf\cvol@}, \cvolyear@\par\vss}}}
+
+\issn{1052-1798}
+
+\let\logo@=\copyrightline@
+
+\catcode`\@=13
+
+\def\amsversion{2.1}
+\endinput                                 
+
+%-----------------------------------------------------------------------------
+% End of dimacs.sty
+%-----------------------------------------------------------------------------

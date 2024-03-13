@@ -1,0 +1,100 @@
+.\" mat2ma isom.d/man/man1 file mat2ma.1
+.\" @(#)date.1v 1.11 88/02/25 SMI;
+.TH mat2ma 1 "31 August 1992" "Geometry Group" "Geometry Group's manual"
+.SH NAME
+mat2ma \- try to find two generators for a permutation group, and convert
+the corresponding matrices in a matrix representation to Meataxe format.
+.SH SYNOPSIS
+.B mat2ma
+[
+.B \-p
+.I prime
+]
+[
+.B \-c
+.I class
+]
+[
+.B \-e
+.I exponent
+]
+.I gpname permrep
+.SH DESCRIPTION
+.B mat2ma
+takes input from the file
+.I gpname.permrep,
+which contains a permutation represention of the finitely presented group
+defined in
+.I gpname.
+It also takes input from the file
+.I gpname.permrep\fPsubpquot\fIprime
+by default, or from
+.I gpname.permrep\fPsubgp.lcs\fIprime,class,exponent\fP
+if the
+.B \-c
+option is used.
+(But if
+.I permrep
+is set equal to
+.B -t
+for the trivial permutation representation, then the
+.B lcs
+output file will be
+.I gpname.lcs\fIprime,class,exponent\fP.)
+It reads the matrices from this file, which define the action of the
+generators of the permutation group in
+.I gpname.permrep
+on the corresponding module over the field of order
+.I prime.
+.B mat2ma
+attempts to find two generators of this permution group. If it fails, it gives
+up with a message to stderr. If it succeeds, then it computes the matrices
+corresponding to these two generators and outputs their transposes
+in Meataxe format to the files
+.I gpname\fP.ma.a1 and
+.I gpname\fP.ma.a2.
+The Meataxe programs (see
+.B meataxe(1))
+can then be used to compute the submodules of this module.
+Since we transposed the matrices before outputting them, it is in fact
+computing the quotient modules of the original module.
+.B subpquot(1)
+or
+.B lcs(1)
+can then be run again to compute permutation representations of the
+corresponding quotients
+of the original finitely presented group.
+.SH OPTIONS
+.IP \fB\-p
+.I prime
+.br
+Set the prime involved equal to
+.I prime.
+If this option is not used, then the program will prompt interactively for
+.I prime.
+.IP \fB\-c
+.I class
+.br
+Input the matrices from the output of a run of
+.B lcs(1)
+at class
+.I class,
+as described above.
+.IP \fB\-e
+.I exponent
+.br
+In case of output from a run of
+.B lcs(1),
+set the exponent equal to
+.I exponent
+(the default is 0).
+.SH SEE ALSO
+.B subpquot(1)
+.br
+.B lcs(1)
+.br
+.B meataxe(1)
+.br
+.SH DIAGNOSTICS
+Exit code is 0 if successful or if two generating permutations cannot
+be found, and 2 otherwise.

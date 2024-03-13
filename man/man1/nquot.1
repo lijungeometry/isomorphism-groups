@@ -1,0 +1,105 @@
+.\" nquot isom.d/man/man1 file nquot.1
+.\" @(#)date.1v 1.11 88/02/25 SMI;
+.TH nquot 1 "28 January 1994" "Geometry Group" "Geometry Group's manual"
+.SH NAME
+nquot \- compute the lower central series of a finitely presented group
+.SH SYNOPSIS
+.B nquot
+[
+.B \-c
+.I maxclass
+]
+[
+.B \-t
+.I maxtime
+]
+.I gpname
+[
+.B \-s
+.I permrep
+]
+.SH DESCRIPTION
+.B nquot
+is merely a filter, which calls up code written by Werner Nickel in Canberra.
+It takes input from the file
+.I gpname,
+which should contain a finite presentation of a group
+.I G.
+In its straighforward form,
+.B nquot
+(the general nilpotent quotient algorithm) computes the quotients
+.I G/G\fG(\fIc\fP)
+of the lower central series of 
+.I G
+for
+.I c
+going from 1 down to class
+.I maxclass
+(which is 1 by default).
+If the option
+.B \-s
+.I permrep
+is used, then the file
+.I gpname.permrep
+is expected to contain a permutation representation of
+.I G
+on which
+.B subgp(1)
+has been run previously.
+In this case,
+.B nquot(1)
+does not compute the quotients of
+.I G
+as described above, but rather the quotients
+.I H/H\fP(\fIc\fP)
+of the lower central series of the complete inverse image in
+.I G
+of the stabilizer
+.I H
+of the point 1 in this permutation representation, using the output of
+.B subgp(1)
+for the presentation of
+.I H.
+.PP
+In all cases,
+the abelian invariants of the successive layers of the lower central
+series, for
+.I c
+from 1 to
+.I maxclass,
+of
+.I G
+or
+.I H
+are output to
+\fIgpname\fP.nquot
+or \fIgpname.permrep\fPsubgp.nquot
+The computation halts if the lower central series becomes constant.
+.PP
+.SH OPTIONS
+.IP \fB\-c
+.I class
+.br
+Set the maximum class to
+.I class.
+.IP \fB\-t
+.I maxtime
+.br
+Stop and give up (with a message to stderr) after
+.I maxtime
+seconds have elapsed.
+.IP \fB\-s
+.I permrep
+.br
+See above.
+.SH SEE ALSO
+.B subgp(1)
+.br
+.B lcs(1)
+.SH DIAGNOSTICS
+Exit code is normally 0, even if the program exits through lack of time or
+space. It is 2 if the command-line is wrong, or if there is an error in
+reading the input files or data.
+.SH ACKNOWLEDGEMENTS
+This program invokes Werner Nickel's Canberra implementation of the
+nilpotent quotient algorithm.

@@ -1,0 +1,85 @@
+.\" sg isom.d/man/man1 file sg.1
+.\" @(#)date.1v 1.11 88/02/25 SMI;
+.TH sg 1 "31 August 1992" "Geometry Group" "Geometry Group's manual"
+.SH NAME
+sg \- compute a base and strong generating set for a permutation group
+.SH SYNOPSIS
+.B sg
+[
+.B \-b
+]
+[
+.B \-ib
+]
+[
+.B \-pg
+]
+[
+.I permgpname
+]
+.SH DESCRIPTION
+.B sg
+takes input from the file
+.I permgpname
+(or
+\fIpermgpname.\fPpgens
+if the
+.B \-pg
+option is used)
+if this is specified,
+and from standard input otherwise.
+Output is to the file
+.I permgpname.\fPsg
+in the first case and to standard output in the second.
+The input should contain the generators of a permutation group
+(as output by
+.B permim(1),
+.B lowindex(1),
+or
+.B subpquot(1),
+.B subabquot(1)
+or
+.B lcs(1)
+with the
+.B \-p
+option, for example).
+The output contains a base, list of basic orbit lengths,
+and set of strong generators
+for the same permutation group. This can be used as the target permutation
+group in a run of 
+.B permim(1),
+if 
+.I permgpname.\fPsg
+is not present in the database of permutation groups.
+It can also be used by
+.B convrep(1)
+to convert to a different permutation representation of the group.
+.SH OPTIONS
+.IP \fB\-b
+Read a base from the input file, and assume that this is a base.
+.IP \fB\-ib
+Write the base that is computed into the original file
+.IP \fB\-pg
+Take input from
+\fIpermgpname.\fPpgens
+rather than
+.I permgpname.
+This is mainly there to allow a user of
+.B quotpic(1)
+to input a personal permutation group.
+.SH SEE ALSO
+.B permim(1)
+.br
+.B lowindex(1)
+.br
+.B subpquot(1)
+.br
+.B subabquot(1)
+.br
+.B lcs(1)
+.br
+.B convrep(1)
+.br
+.B quotpic(1)
+.SH DIAGNOSTICS
+Exit code is 0 if successful and 2 otherwise.

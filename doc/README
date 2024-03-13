@@ -1,0 +1,17 @@
+There are TeX versions of two papers in this directory, which refer to
+the programs distributed here.
+
+The file isomtest.tex contains LaTeX code for a paper on isomorphism testing, 
+`Testing for isomorphism between finitely presented groups', D.F.Holt and
+Sarah Rees, in Groups, Combinatorics and Geometry, ed. M.W.Liebeck and J.S.Saxl,
+London Mathematical Society Lecture Note Series 165, pp 459-475, CUP 1992.
+The files isomtestfig1 and isomtestfig2 contain postscript descriptions of
+the figures for that paper.
+This paper describes the isomorphism testing program `testisom'.
+
+The file quotpic.tex contains AMSTeX code for a paper describing the program 
+quotpic, `A graphics system for displaying finite quotients of finitely 
+presented groups', Derek F Holt and Sarah Rees, to appear in Proc. DIMACS
+Workshop on Groups and Computation, AMS-ACM 1991. The files quotpicfig1, quotpicfig2
+and quotpicfig3 contain postscript descriptions of the figures for that paper.
+

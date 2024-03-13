@@ -1,0 +1,181 @@
+.\" kbeqn isom.d/man/man1 file kbeqn.1
+.\" @(#)date.1v 1.11 88/02/25 SMI;
+.TH kbeqn 1 "27 January 1994" "Geometry Group" "Geometry Group's manual"
+.SH NAME
+kbeqn \- produce a finite set of Knuth-Bendix equations and word reduction
+finite state automaton
+.SH SYNOPSIS
+.B kbeqn
+[
+.B \-t
+.I tidyint
+] [
+.B \-h
+.I maxeqns maxstates maxtime
+] [
+.B \-lex
+] [
+.B \-rec
+] [
+.B \-o
+]
+[
+.I gpname
+]
+.SH DESCRIPTION
+.B kbeqn
+reads either from a file whose name 
+.I gpname
+is specified on the command
+line, or from standard input, if no such file is specified. (If the
+.B \-o
+option is used, however, then input is from the file
+.I gpname.\fPordgens,
+which is the output of
+.B ordrels(1)
+applied with the
+.B \-o
+option).
+Output is to
+.I gpname\fP.kbeqn
+in the first case, and to standard output in the second.
+Either way, input should conform to the Geometry Group standard
+format, and should contain a list of generators and relators.
+.PP
+.B kbeqn
+runs the Knuth-Bendix algorithm on the group relations and produces a
+finite set of equations and a finite state automaton. The latter is the
+word-acceptor corresponding to the set of equations. It will only be the
+correct word-acceptor for the group if the system is confluent - otherwise, it
+will accept more than one word for some group elements. Its failure states
+are negative, where state -\fIn\fP means that the left-hand-side of the
+\fIn\fPth equation has just been read. This makes it suitable for use in a
+fast reduction algorithm, in the program
+.B findisoms(1)
+for example.
+.PP
+The program halts naturally
+only when the system of equations is confluent. This means
+that it will run forever on most examples. At regular intervals, it performs
+a tidying-up operation, which involves the removal of redundant equations,
+and it then
+reports on the number of equations and states of the fsa. It can be stopped
+with ^C (interrupt), in which case it will output and stop after the next
+tidying-up.
+Alternatively, if the arguments
+.B \-h
+option is called, then the program will stop when certain conditions are
+satisfied (see below).
+.PP
+When a new reduction rule  is derived, the left hand side of the rule is put
+equal to the larger of the two words in the rule, according to the ordering
+of words that is being used. By default, this ordering is short-lex;
+i.e. first by length and, for words of equal length, lexicographically,
+using the ordering of generators in the input. (If not defined explicitly,
+inverses of generators are inserted immediately after the generator.)
+Alternatively, the recursive-path ordering (which was programmed by
+James Curmi from Melbourne) can be used by selecting the
+.B \-rec
+option.
+Some examples complete with this orderting, but not with short-lex,
+including nilpotent groups.
+.PP
+The input must occur in the following order.
+.br
+(i) Generators, given as a list of gens (or words).
+This defines the order of the generators.
+.br
+(ii) (Optional) Table of inverses.
+If the inverse of a generator
+.I g
+is not given explicitly, then
+it will be put equal to
+.I g^-1
+by default and, if
+.I g^-1
+was not present
+in the list of generators, then it will be inserted immediately after
+.I g.
+Of course the inverse of
+.I g^-1
+will be
+.I g.
+(If, however,
+.I g*g
+is later discovered in the list of relators, then the inverse of
+.I g
+will be redefined to be
+.I g.
+) Alternatively, if the line
+.IP
+.nf
+inverses {case_change}
+.fi
+.PP
+is present in the input, then all generators must be single letters, and
+inverses will be defined by case change (i.e. inv(\fIg\fP) = \fIG\fP).
+.br
+(iii) List of relators.
+.br
+(iv) (Optional) A list of parameters. All parameters are ignored, except for
+.I KBtidyint,
+which is the interval (number of new equations found) between tidying-up
+operations. The default is 20.
+Alternatively,
+.I KBtidyint
+may be set on the command line by the
+.B \-t
+.I tidyint
+option. This overrides a value given in a parameters section.
+.PP
+The output is as follows.
+.br
+(i) The finite state automaton described above.
+.br
+(ii) Table of inverses.
+.br
+(iii) A list of relations (a rels section)
+containing the left and right hand sides of the
+Knuth-Bendix rules.
+.SH OPTIONS
+.IP \fB\-t
+.I tidyint
+.br
+Set the value of
+.I KBtidyint
+equal to
+.I tidyint.
+.IP \fB\-h
+.I maxeqns maxstates maxtime
+.br
+After a tidying-up operation, the program halts if either the number of
+equations exceeds
+.I maxeqns,
+.B or
+if the number of states of the fsa exceeds
+.I maxstates,
+.B or
+the process-time exceeds
+.I maxtime
+seconds.
+.IP \fB\-lex
+Use short-lex ordering (default).
+.IP \fB\-rec
+Use recursive-path ordering.
+.IP \fB\-o
+Take input from
+.I gpname.ordgens
+rather than from
+.I gpname.
+This option should always be used if the output is to be used as input to
+.B findisoms(1).
+.SH SEE ALSO
+.B ordrels(1)
+.br
+.B findisoms(1)
+.SH DIAGNOSTICS
+Exit code is 0 if completes with a confluent set of equations, 1 if 
+successful, but halts without a confluent set being achieved, 2 otherwise.
+.PP
+Various error messages are written to stderr if the input does not conform
+to that described above, or if the program runs out of space.

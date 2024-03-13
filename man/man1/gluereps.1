@@ -1,0 +1,93 @@
+.\" gluereps isom.d/man/man1 file gluereps.1
+.\" @(#)date.1v 1.11 88/02/25 SMI;
+.TH gluereps 1 "1 February 1994" "Geometry Group" "Geometry Group's manual"
+.SH NAME
+gluereps \- compute a combined permutation representation of a group
+.SH SYNOPSIS
+.B gluereps
+[
+.B \-m
+maxtime
+]
+gpname rep1 rep2
+.B \-p
+oprep
+[
+.B \-m
+.I maxopdeg
+]
+.SH DESCRIPTION
+Given a transitive permutation representation of a finitely presented group
+.I G
+on the right cosets of a subgroup
+.I H,
+and also a transitive permutation representation of
+.I H
+on the cosets of a subgroup
+.I K,
+.B gluereps
+computes the permutation representation of
+.I G
+on the right cosets of
+.I K.
+The file
+.I gpname
+should contain the presentation of
+.I G,
+and
+.I gpname.rep1
+the permutation representation of
+.I G
+on the cosets of
+.I H.
+Before running
+.B gluereps,
+it is necessary to run
+.br
+.B subgp
+.I gpname rep1
+.br
+to produce a presentation of
+.I H,
+and
+.I gpname.rep1\fPsubgp.\fIrep2\fP
+should contain the input permutation representation of
+.I H
+on the cosets of
+.I K.
+This last file will normally be a result of applying
+.B lowindex(1)
+or
+.B permim(1)
+to
+.I gpname.rep1\fPsubgp.
+.PP
+The output is to the file
+.I gpname.oprep,
+where
+.I oprep
+must be specified on the command-line, using the
+.B \-p
+option
+after the group name.
+.SH OPTIONS
+.IP \fB\-t
+.I maxtime
+.br
+Stop (and give up) after
+.I maxtime
+seconds, writing a message to stdout.
+.IP \fB\-m
+.I maxopdeg
+.br
+Set the largest degree for which permutation representations can be output to
+.I maxopdeg
+(9999 by default).
+.SH SEE ALSO
+.B subgp(1)
+.br
+.B permim(1)
+.br
+.B lowindex(1)
+.SH DIAGNOSTICS
+Exit code is 0 if successful and 2 otherwise.

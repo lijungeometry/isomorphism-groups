@@ -1,0 +1,33 @@
+.\" permsum isom.d/man/man1 file permsum.1
+.\" @(#)date.1v 1.11 88/02/25 SMI;
+.TH permsum 1 "6 November 1991" "Geometry Group" "Geometry Group's manual"
+.SH NAME
+permsum \- compute the sum of two permutation representations of a group
+.SH SYNOPSIS
+.B permsum
+.I gpname rep1 rep2 newrep
+.SH DESCRIPTION
+.B permsum
+takes input from the files
+.I gpname.rep1
+and
+.I gpname.rep2,
+which are assumed to contain permutation representations of the same
+finitely presented group
+defined in
+.I gpname
+(and so they should have the same numbers of generators).
+The output is to the file
+.I gpname.newrep
+and contains the sum (or subdirect product) of the two representations.
+Thus, for example, if
+.I gpname.rep1
+and
+.I gpname.rep2
+are regular permutation representation with kernels \fIH\fP1 and \fIH\fP2,
+then the kernel of the new representation will be the intersection of
+\fIH\fP1 and \fIH\fP2.
+.SH SEE ALSO
+.B permjoin(1)
+.SH DIAGNOSTICS
+Exit code is 0 if successful and 2 otherwise.

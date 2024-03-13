@@ -1,0 +1,126 @@
+.\" abquot isom.d/man/man1 file abquot.1
+.\" @(#)date.1v 1.11 88/02/25 SMI;
+.TH abquot 1 "27 January 1994" "Geometry Group" "Geometry Group's manual"
+.SH NAME
+abquot \- find the abelian invariant factors of a finitely presented group
+.SH SYNOPSIS
+.B abquot [
+.I gpname
+]
+.SH DESCRIPTION
+.B abquot
+reads either from 
+.I gpname,
+or from standard input if no file is specified.
+Output is to 
+.I gpname\fP.abquot
+in the first case, to standard output in the second.
+In either case, input should conform to the Geometry Group standard
+format, and should contain a list of generators and relators for a group,
+.I G.
+The relators are first abelianized and written additively, and then
+reordered as in
+.B ordrels(1),
+so that the relators that only involve the first
+.I i
+generators precede the others, for all relevant
+.I i.
+Since the abelianization process may result in some generators disappearing
+from some relators, this may result in a different order from that produced
+by
+.B ordrels.
+The
+.I relinvolve
+sequence for the relators is computed as in
+.B ordrels.
+The order of the generators is not changed, but only the first of each
+generator-inverse pair is kept.
+.PP
+The orders of the cyclic invariant factors of the resulting abelianized group
+\fIG\fP/[\fIG\fP,\fIG\fP] are then computed, together with the map of the
+generators of
+.I G
+onto these factors. The generators of the infinite cyclic factors are chosen
+so as to make the matrix of this map onto these factors is lower triangular.
+.PP
+As is the case with
+.B ordrels(1),
+the output of this program is designed to be used by the program
+.B findisoms(1).
+It is not intended for use with large presentations. The program
+.B subabquot(1),
+is more suitable for this purpose.
+.PP
+The input must occur in the following order.
+.br
+(i) Generators, given as a list of gens (or words).
+This defines the order of the generators.
+.br
+(ii) (Optional) Table of inverses.
+If the inverse of a generator
+.I g
+is not given explicitly, then
+it will be put equal to
+.I g^-1
+by default and, if
+.I g^-1
+was not present
+in the list of generators, then it will be inserted immediately after
+.I g.
+Of course the inverse of
+.I g^-1
+will be
+.I g.
+(If, however,
+.I g*g
+is later discovered in the list of relators, then the inverse of
+.I g
+will be redefined to be
+.I g.
+) Alternatively, if the line
+.IP
+.nf
+inverses {case_change}
+.fi
+.PP
+is present in the input, then all generators must be single letters, and
+inverses will be defined by case change (i.e. inv(\fIg\fP) = \fIG\fP).
+.br
+(iii) List of relators.
+.br
+.PP
+The output, which is written to standard output, is as follows.
+.br
+(i) The list of generators, with order unchanged, but only the first of
+each generator-inverse pair included, given in an
+.I abgens
+section.
+.br
+(ii) The reordered list of abelianized relators in additive notation,
+given in an
+.I abrels
+section.
+.br
+(iii) A
+.I abrelinvolve
+section containing the corresponding relinvolve sequence.
+.br
+(iv) The orders of the cyclic invariant factors of the abelianized group
+(with infinite factors denoted by 0), given in an
+.I abinvariants
+section.
+.br
+(v) The images of the generators of the group in these invariant factors,
+given in an
+.I abimages
+section.
+.SH SEE ALSO
+.B ordrels(1)
+.br
+.B findisoms(1)
+.br
+.B subabquot(1)
+.br
+.B ``Data Exchange for Automatic Groups''
+.SH DIAGNOSTICS
+Exit code is 0 if successful and 2 otherwise.

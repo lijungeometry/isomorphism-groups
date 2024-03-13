@@ -1,0 +1,294 @@
+.\" isom.d/man/man1 file ordrels.1
+.\" @(#)date.1v 1.11 88/02/25 SMI;
+.TH ordrels 1 "28 January 1994" "Geometry Group" "Geometry Group's manual"
+.SH NAME
+ordrels \- reorder the generators and relators of the presentation of a group
+.SH SYNOPSIS
+.B ordrels
+[
+.B \-b
+] [
+\-g
+] [
+.B \-m
+.I maxperms
+] [
+.B \-ml
+.I maxlength
+] [
+.B \-l
+.I elim_limit
+] [
+.B \-i
+.I tidy_int
+] [
+\-w
+] [
+.B \-r
+reduceratio
+] [
+.B \-t
+.I maxtime
+] [
+\-p
+]
+.I gpname
+.SH DESCRIPTION
+.B ordrels
+reads from a file whose name
+.I gpname
+is specified on the command line. Output is to
+.I gpname\fP.ordrels.
+The input should conform to the Geometry Group standard
+format, and should contain a list of generators and relators.
+.PP
+.B ordrels
+first reorders the generators so that each generator is followed by its
+inverse. Each such generator-inverse pair is subsequently treated as a single
+unit. The following operations are then carried out.
+Note that the first three of these are the standard Tietze simplification
+procedures of alternately eliminating a bunch of redundant generators,
+and then attempting to shorten the resulting presentation by searching
+for common substrings in relators. They are the same as those carried out by
+.B simplifypres(1),
+and the parameters, which can be set on the command-line, are the same.
+The only difference is that in
+.B simplifypres,
+the redundant generators are discarded completely, and the remaining
+generators re-named, whereas in ordrels, the redundant generators are kept
+(without changing their names), and their defining relators moved to the end.
+The idea is that these defining relators can then be used to calculate
+the images of the redundant generators in a homomorphism from G to
+another group, but only the images of the remaining generators are
+required to define the homomorphism.
+.PP
+(i) If a generator is found such that neither it nor its inverse appears in
+any relator, then that generator-inverse pair is temporarily removed from
+the list.
+.PP
+(ii) If a generator is found with the property that it or its
+inverse occurs only once in some relator, then
+that relator is
+rewritten so that the inverse of the relevant generator occurs at the end of
+the word. (For example, c*b*a*C*b would be rewritten as B*C*B*c*A.) It is then
+regarded as a defining relator for that generator, and it is
+used to eliminate the generator and its inverse from all other relators.
+This relator and the corresponding generator-inverse pair are then temporarily
+removed from the lists. When there is a choice of generators to eliminate,
+one is chosen to minimize the resulting increase in total relator length.
+.PP
+(iii) At regular intervals, we attempt to shorten the remaining relators by
+searching for common substrings.
+.PP
+By default (i), (ii) and (iii) are carried out as often as possible,
+but various restrictions can be imposed by the use of command-line
+parameters, which are all described below.
+.PP
+(iv) After the above process has been completed, the remaining
+generator-inverse pairs and relators are reordered, with the aim of optimizing
+the associated
+.I relinvolve
+sequence,
+which we shall now describe. Suppose that we have a sequence of
+.I n
+generator-inverse pairs, and a list of relators in these generators and their
+inverses. Then
+.I relinvolve
+is a sequence of
+.I n
+non-negative integers. If the \fIi\fPth term in this sequence is
+.I m,
+then the first
+.I m
+relators in the list are guaranteed only to involve the first
+.I i
+generators (or their inverses). The optimal
+.I relinvolve
+sequence is the largest one lexicographically.
+.PP
+After carrying out (iv), any generators and relators deleted from the lists
+under (i) and (ii) are reinserted, with those generators deleted under (i)
+coming first. The
+.I relinvolve
+sequence is then extended to include such generator-inverse pairs.
+For a generator-inverse pair occurring under (i), the
+.I relinvolve
+entry is put equal to the total number of relators that were there before the
+reinsertion of the defining relators.
+For a generator-inverse pair occurring under (ii), the
+.I relinvolve
+entry is put equal to -\fIl\fP, where
+.I l
+is the number of the defining relator for that generator.
+.PP
+The aim of the procedure described above is to facilitate the computation of
+homomorphisms from the group
+that is defined by this presentation to another group, as in the programs
+.B findisoms(1),
+.B permim(1)
+and
+.B lowindex(1),
+for example.  The idea is that when
+we are investigating possible images of the first
+.I i
+generator-inverse pairs, then we can immediately check whether the first
+.I m
+relators are satisfied in the image group, where
+.I m
+is the \fIi\fPth term in the
+.I relinvolve
+sequence. Furthermore, the images of those generator-inverse pairs with a
+negative
+.I relinvolve
+entry can be computed from the other images, by using the appropriate defining
+relator.
+.PP
+The input should occur in the following order
+.br
+(i) Generators, given as a list of gens (or words).
+.br
+(ii) (Optional) Table of inverses.
+If the inverse of a generator
+.I g
+is not given explicitly, then
+it will be put equal to
+.I g^-1
+by default and, if
+.I g^-1
+was not present
+in the list of generators, then it will be inserted immediately after
+.I g.
+Of course the inverse of
+.I g^-1
+will be
+.I g.
+(If, however,
+.I g*g
+is later discovered in the list of relators, then the inverse of
+.I g
+will be redefined to be
+.I g.
+) Alternatively, if the line
+.IP
+.nf
+inverses {case_change}
+.fi
+.PP
+is present in the input, then all generators must be single letters, and
+inverses will be defined by case change (i.e. inv(\fIg\fP) = \fIG\fP).
+.br
+(iii) List of relators.
+.PP
+The output is as follows.
+.br
+(i) The reordered list of generators.
+.br
+(ii) Table of inverses if required, but only those generators
+.I g
+whose inverse is not equal to \fIg\fP^-1 are listed.
+.br
+(iii) The reordered list of relators.
+.br
+(iv) A relinvolve section, containing the
+.I relinvolve
+sequence for the chosen ordering.
+.SH EXAMPLE
+The input 
+.IP
+.nf
+gens { e f F d a A b c }
+inverses {case_change}
+rels { a*e*a*e  f*f  a*a*a  a*a*a*a*a*a*a*a*b*c  a*a*b*c }
+.fi
+.PP
+produces the output
+.IP
+.nf
+Format 2.2
+gens { f a e d b c }
+inverses { inv(f)=f inv(a)=A inv(e)=E inv(d)=D inv(b)=B inv(c)=C }
+rels { f*f a*a*a a*e*a*e  B*a*C }
+relinvolve { 1 2 3 3 3 -4 }
+.fi
+.SH OPTIONS
+.IP \fB\-b
+For big presentations. If the input presentation is long (currently meaning
+total length bigger than about 3000) or becomes long as a result of
+eliminating generators, then do not eliminate any (more) generators,
+and do not carry out the optimisation procedure described in (iv) above.
+.IP \fB\-g
+Output the generators in their new order, but with the original relators to
+a file named
+.I groupname\fP.ordgens.
+This file is used as input to
+.B kbeqn(1)
+in
+.B testisom(1).
+.IP \fB\-m
+.I maxperms
+.br
+If there are
+.I maxperms
+or fewer generator-inverse pairs remaining at the beginning of step (iv),
+then the
+.I relinvolve
+sequence is computed for all possible permutations of these
+generator-inverse pairs. This ensures that the optimal sequence is found. If
+there are more than
+.I maxperms
+generator-inverse pairs, then a faster method is used, 
+which considers only \fImaxperms\fP! well-chosen permutations, but it cannot be
+guaranteed to find the optimal sequence in every case. The default value for
+.I maxperms
+is currently 6.
+.br
+.IP \fB\-ml
+.I maxlength
+.br
+If the total length of the relators exceeds
+.I maxlength
+before or after carrying out generator eliminations in step (ii), then
+stop eliminating generators and move on to the next step.
+.br
+.IP \fB\-l
+.I elim_limit
+.br
+Eliminate at most
+.I elim_limit
+generators in step (ii) altogether.
+.br
+.IP \fB\-i
+.I tidy_int
+.br
+Move on to the substring searching stage (step (iii)) after eliminating
+.I tidy_int
+generators in each occurrence of step (ii).
+By default,
+.I tidy_int
+ranges from 1000 to 1, according to the length of the presentation.
+.br
+.IP \fB-w
+(Work hard.) Set
+.I tidy_int
+equal to 1.
+.br
+.IP \fr\-i
+.I reduceratio
+.br
+Stop substring searching in step (iii) after a given pass of the relators,
+if the resulting proportionate decrease in total length of the relators 
+is less than 1/\fIreduceratio.\fP This is equal to 100 by default.
+.IP \fB-p
+Print diagnostic information.
+.SH SEE ALSO
+.B simplifypres(1)
+.br
+.B permim(1)
+.br
+.B lowindex(1)
+.br
+.B kbeqn(1)
+.br
+.B findisoms(1)
+.SH DIAGNOSTICS
+Exit code is 0 if successful and 2 otherwise.

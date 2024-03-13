@@ -1,0 +1,306 @@
+.\" lcs isom.d/man/man1 file lcs.1
+.\" @(#)date.1v 1.11 88/02/25 SMI;
+.TH lcs 1 "27 January 1994" "Geometry Group" "Geometry Group's manual"
+.SH NAME
+lcs \- compute the lower p-central series of a finitely presented group
+.SH SYNOPSIS
+.B lcs
+.B \-p
+.I prime
+.B \-c
+.I maxclass
+[
+.B \-e
+.I exponent
+] [
+.B \-f
+] [
+.B \-t
+.I maxtime
+]
+.I gpname
+[
+.B \-s
+.I permrep
+] [
+.B \-p
+] [
+.B \-m
+maxopdeg
+] [
+.B \-a
+] [
+.B \-md
+.I maxopdim
+] [
+.B \-e
+suffix
+]
+.SH DESCRIPTION
+.B lcs
+is merely a filter which calls up code written by Eamonn O'Brien in Canberra.
+The principal algorithm used is
+often known as the nilpotent quotient algorithm or, more recently, the
+p-quotient algorithm.
+It computes the quotients
+.I X/X\fP(\fIc\fP)
+of the lower p-central series of a finitely presented group
+.I X
+for
+.I c
+going from 1 down to class
+.I maxclass,
+modulo a fixed prime
+.I p.
+The prime and
+.I maxclass
+must be entered on the command-line, using the
+.B \-p
+and
+.B \-c
+options, respectively.
+Some related permutation and matrix group actions can also be calculated.
+(If the p-quotient is only required to class 1, then the program
+.B subpquot(1)
+is likely to be more efficient, and should be used instead.)
+The file
+.I gpname
+should contain a presentation of a finitely presented group
+.I G.
+In its basic form,
+.B lcs
+takes its input from this file, and calculates the \fIp\fP-quotients of the
+group
+.I G.
+If the
+.B \-s
+.I permrep
+option is called, however, then it is assumed that the file
+.I gpname.permrep
+contains a transitive permutation representation of
+.I G
+on the right cosets of a subgroup
+.I H,
+and that
+.br
+.B subgp
+.I permrep
+.br
+has previously been run, to create a presentation of
+.I H
+in the file
+.I gpname.permrep\fPsubgp.
+In this case,
+.B lcs
+takes its input from this file, and calculates the \fIp\fP-quotients of the
+group
+.I H.
+.PP
+If the lower p-central series becomes constant for class
+.I c
+less than
+.I maxclass,
+then a message to that effect is written to stdout.
+If the optional argument
+.B \-e
+.I exponent
+is used, then extra relations will be enforced on the quotients to make them
+have exponent dividing
+.I exponent.
+Note that
+.I exponent
+= 0 is equivalent to the default, which is unbounded exponent.
+Otherwise,
+.I exponent
+must be a power of the prime
+.I p,
+or the program will crash.
+.PP
+For each
+.I c
+from 1 to
+.I maxclass,
+a power-commutator presentation of the quotient of
+.I G
+or
+.I H
+at class
+.I c
+together with the images of the group generators in terms of the
+pcp-generators is output to the file \fIgpname\fP.lcs\fIp\fP,\fIc\fP,\fIe\fP
+or \fIgpname.permrep\fPsubgp.lcs\fIp\fP,\fIc\fP,\fIe\fP
+(where
+.I e
+=
+.I exponent).
+(Note that the
+.I e
+component of these filenames is always present - if no exponent is specified,
+then the default is
+.I e
+= 0.)
+.PP
+If the
+.B \-p
+option (after the group name) is called, then, provided the degree is not
+greater than
+.I maxopdeg
+(9999 by default), the permutation representation of
+.I G
+on the right cosets of the subgroup
+G(\fIc\fP)
+or
+H(\fIc\fP)
+is output to the file
+\fIgpname\fP.lcs\fIp\fP,\fIc\fP,\fIe\fPp
+or \fIgpname.permrep\fPsubgp.lcs\fIp\fP,\fIc\fP,\fIe\fPp.
+.PP
+If the
+.B \-a
+option is called, then,
+provided that the dimension is not greater than
+.I maxopdim
+(299 by default), the action of the generators of
+.I gpname
+on the elementary abelian section
+.I G\fP(\fIc-1\fP)/\fIG\fP(\fIc\fP)
+or
+.I H\fP(\fIc-1\fP)/\fIH\fP(\fIc\fP)
+are computed and output as a list
+of matrices (one for each generator) to the file
+\fIgpname\fP.lcs\fIp\fP,\fIc\fP,\fIe\fPa
+or \fIgpname.permrep\fPsubgp.lcs\fIp\fP,\fIc\fP,\fIe\fPa.
+In the second case, this is only meaningful if the subgroup
+.I H
+is normal in
+.I G
+or, equivalently, if the permutation representation
+in
+.I gpname.permrep
+is regular. The quotient modules of this matrix group can later be
+computed with the Meataxe programs (see
+.B meataxe(1)),
+preceded by the filter
+.B mat2ma(1).
+It is then possible to run
+.B lcs
+again with the
+.B \-e
+option (after the group name),
+and output permutation representations of the quotients
+\fIG\fP/\fIL\fP, where
+.I L
+is a normal subgroup of
+.I G
+corresponding to a submodule of
+.I G\fP(\fIc-1\fP)/\fIG\fP(\fIc\fP)
+or
+.I H\fP(\fIc-1\fP)/\fIH\fP(\fIc\fP).
+.PP
+.SH OPTIONS
+.IP \fB\-p
+.I prime.
+.br
+Set the value of the prime
+.I p.
+.IP \fB\-c
+.I maxclass
+.br
+Set the maximum class for p-quotient computation.
+.IP \fB\-e
+.I exponent.
+.br
+Set the value of the exponent.
+.IP \fB\-f
+Look for the output of a previous run of
+.B lcs
+at some class
+.I c,
+and continue from class
+.I c\fP+1.
+.IP \fB\-t
+.I maxtime
+.br
+Stop and give up (with a message to stderr) after
+.I maxtime
+seconds have elapsed.
+.IP
+All of the preceding options must occur before the
+.I gpname
+argument. If called, the following option must occur immediately after
+.I gpname,
+and the remaining options after that.
+.IP \fB\-s
+.I permrep
+.br
+Calculate abelian invariants of a subgroup
+.I H
+rather than
+.I G
+itself. See above.
+.IP \fB\-p
+.I oprep
+.br
+Output permutation representations to the file
+.I gpname.oprep,
+as described above.
+.IP \fB\-m
+.I maxopdeg
+.br
+Set the largest degree for which permutation representations can be output to
+.I maxopdeg
+(9999 by default).
+.IP \fB\-a
+(For normal subgroups only.) To use this option,
+.br
+.B subgp
+.I iprep
+.br
+must have been run with the
+.B \-a
+option.
+Output the conjugation action of the
+generators of
+.I G
+on those of
+.I H
+as matrices over the field of order
+.I p,
+as described above.
+.IP \fB\-md
+.I maxopdim
+.br
+Set the largest dimension for which matrix representations can be output to
+.I maxopdim
+(299 by default).
+.IP \fB\-e
+.I suffix
+.br
+Read generators of a submodule of
+.I G\fP(\fIc-1\fP)/\fIG\fP(\fIc\fP)
+or
+.I H\fP(\fIc-1\fP)/\fIH\fP(\fIc\fP)
+(in Meataxe format)
+from the file
+.I gpname.suffix,
+compute the quotient of
+.I G
+by this submodule, and output the corresponding permutation representation.
+(This option should only be used together with the
+.B \-p
+option after the group name.)
+.SH SEE ALSO
+.B subgp(1)
+.br
+.B mat2ma(1)
+.br
+.B meataxe(1)
+.br
+.B subpquot(1)
+.SH DIAGNOSTICS
+Exit code is normally 0, even if the program exits through lack of time or
+space. It is 2 if the command-line is wrong, or if there is an error in
+reading the input files or data.
+.SH ACKNOWLEDGEMENTS
+This program invokes Eamonn O'Brien's Canberra implementation of the
+p-quotient algorithm.

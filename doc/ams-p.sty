@@ -1,0 +1,267 @@
+%%% ====================================================================
+%%% @AMSTeX-style-file{
+%%%   filename  = "ams-p.sty",
+%%%   version   = "2.1b",
+%%%   date      = "1995/04/03",
+%%%   time      = "10:05:51 EDT",
+%%%   checksum  = "64483 267 635 8825",
+%%%   author    = "American Mathematical Society",
+%%%   address   = "PO Box 6248, Providence, RI 02940, USA",
+%%%   email     = "tech-support@math.ams.org (Internet)",
+%%%   supported = "yes",
+%%%   keywords  = "",
+%%%   abstract  = "This is an AMSTeX documentstyle. It uses the amsppt
+%%%     documentstyle as a base and adds a few refinements to give
+%%%     printed documents the visual form used for final publication of
+%%%     AMS proceedings volumes. There are also documentstyles for the
+%%%     various AMS book series that input this documentstyle and add
+%%%     series-specific modifications.",
+%%%   docstring = "The checksum field above contains: CRC-16
+%%%     checksum, number of lines, number of words, and number of
+%%%     characters, as produced by Robert Solovay's checksum utility.",
+%%% }
+%%% ====================================================================
+
+%    Input the AMS preprint style (checking first to see if
+%    it's preloaded).
+\def\next{AMSPPT}\ifx\styname\next \else\input amsppt.sty \relax\fi
+
+%    Then load specs that are shared between ams-m and ams-p.
+\input ams-spec.sty \relax
+
+\catcode`\@=11
+
+% pageheight set here because of copyrightline considerations
+\pageheight{560pt}% firstpage is 52pc, all others are 50.5pc
+		  % minus 24pt for copyrightline & 18pt for makefootline
+		  % & 12pt for jourlogo & 10pt for topskip
+
+\def\pretitle{\null\vskip74pt}
+
+\def\addressfont@{\eightpoint}
+
+
+%       define  a logo for the upper left-hand corner
+
+\def\jourlogo{%
+	\def\rightheadline{\vtop to 0pt{%
+        \sixrm \baselineskip7pt
+        \parindent0pt \frenchspacing
+	AMS Proceedings Style\hfil\break
+        Volume {\sixbf\cvol@}, \cvolyear@\par\vss}}}
+
+%       macros to be put into the \topmatter for the logo
+
+\def\cvol#1{\gdef\cvol@{\ignorespaces#1\unskip}}
+\def\cvolyear#1{\gdef\cvolyear@{\ignorespaces#1\unskip}}
+\def\cyear#1{\gdef\cyear@{\ignorespaces#1\unskip}\cyear@@#100000\end@}
+
+\def\cyear@@#1#2#3#4#5\end@{\gdef\cyearmodc@{#3#4}%
+        \gdef\cyearmodcHold@{#3#4}}
+
+\cvol{00}
+\cyear{0000}
+\cvolyear{0000}
+
+
+\def\issn#1{\gdef\theissn{#1}}
+\issn{0000-0000}
+
+\def\copyrightline@{\baselineskip2pc
+    \rightline{%
+        \vbox{\sixrm \textfont2=\sixsy \baselineskip 7pt
+            \halign{\hfil##\cr
+                \copyright\cyear@\ American Mathematical Society\cr
+                 \theissn/\cyearmodc@\ \$1.00 + \$.25 per page\cr }}}}
+
+\def\cyearmodc#1{\gdef\cyearmodc@{\ignorespaces#1\unskip}}
+
+%  The copyright block takes the place of the AMS-TeX logo; otherwise the
+%  AMSPPT.STY output routine does what we want.
+
+\let\logo@=\copyrightline@
+
+%    Dummy definition of \keyboarder, for now [mjd,1995/04/03]
+\def\keyboarder#1{}%
+
+\font@\titlebf=cmbx10 scaled \magstep1	% 12/14
+\font@\titlei=cmmi10 scaled \magstep1
+\font@\titlesy=cmsy10 scaled \magstep1
+\def\titlefont{\normalbaselineskip14\p@
+ \textonlyfont@\bf\titlebf
+ \ifsyntax@\else
+  \textfont\z@\titlebf  \scriptfont\z@\tenrm  \scriptscriptfont\z@\sevenrm
+  \textfont\@ne\titlei  \scriptfont\@ne\teni  \scriptscriptfont\@ne\seveni
+  \textfont\tw@\titlesy \scriptfont\tw@\tensy \scriptscriptfont\tw@\sevensy
+  \textfont\thr@@\tenex \scriptfont\thr@@\tenex \scriptscriptfont\thr@@\tenex
+ \fi
+ \normalbaselines\titlebf}
+
+\font@\authorbf=cmbx10 scaled \magstephalf	% 11/13
+\font@\authorrm=cmr10 scaled \magstephalf
+\font@\authori=cmmi10 scaled \magstephalf
+\font@\authorsy=cmsy10 scaled \magstephalf
+\def\authorfont{\normalbaselineskip13\p@
+ \textonlyfont@\bf\authorbf
+ \ifsyntax@\else
+  \textfont\z@\authorbf  \scriptfont\z@\tenrm  \scriptscriptfont\z@\sevenrm
+  \textfont\@ne\authori  \scriptfont\@ne\teni  \scriptscriptfont\@ne\seveni
+  \textfont\tw@\authorsy \scriptfont\tw@\tensy \scriptscriptfont\tw@\sevensy
+  \textfont\thr@@\tenex \scriptfont\thr@@\tenex \scriptscriptfont\thr@@\tenex
+ \fi
+ \normalbaselines\authorrm}
+
+\def\title{\let\savedef@\title
+ \def\title##1\endtitle{\let\title\savedef@\let\\=\cr
+   \global\setbox\titlebox@\vtop{\titlefont\bf
+   \raggedcenter@\frills@{##1}\endgraf}%
+ \ifmonograph@ \edef\next{\the\leftheadtoks}\ifx\next\empty
+    \leftheadtext{##1}\fi
+ \fi
+ \edef\next{\the\rightheadtoks}\ifx\next\empty \rightheadtext{##1}\fi
+ }%
+ \nofrillscheck\title}
+
+
+
+
+%  authors are set in all caps
+
+\def\author#1\endauthor{\global\setbox\authorbox@
+ \vbox{\authorfont\raggedcenter@
+  {\ignorespaces#1\endgraf}}\relaxnext@
+ \edef\next{\the\leftheadtoks}%
+ \ifx\next\empty\expandafter\uppercase{\leftheadtext{#1}}\fi}
+
+
+
+%  \abstract differs from the one in AMSPPT.STY by the use of a slightly
+%  larger indentation.
+
+\def\abstract{\let\savedef@\abstract
+ \def\abstract{\let\abstract\savedef@
+  \setbox\abstractbox@\vbox\bgroup\indenti=3pc\noindent$$\vbox\bgroup
+  \def\envir@end{\endabstract}\advance\hsize-2\indenti
+  \def\usualspace{\enspace}\eightpoint \noindent
+  \frills@{{\abstractfont@ Abstract.\enspace}}}%
+ \nofrillscheck\abstract}
+
+\def\dedicatory #1\enddedicatory{\def\preabstract{{\vskip 20\p@
+  \eightpoint\it \raggedcenter@#1\endgraf}}}
+
+%  \keywords, \subjclass and \thanks appear as first-page footnotes.
+%  Reformat the top matter for AMS-P style.
+
+\outer\def\endtopmatter{\add@missing\endabstract
+ \edef\next{\the\leftheadtoks}\ifx\next\empty
+  \expandafter\leftheadtext\expandafter{\the\rightheadtoks}\fi
+   \ifx\thesubjclass@\empty\else \makefootnote@{}{\thesubjclass@}\fi
+   \ifx\thekeywords@\empty\else \makefootnote@{}{\thekeywords@}\fi
+   \ifx\thethanks@\empty\else \makefootnote@{}{\thethanks@}\fi
+  \ifTurnOffLogo\else\jourlogo\fi
+  \pretitle
+  \box\titlebox@
+  \topskip10pt% reset to normal value
+  \preauthor
+  \ifvoid\authorbox@\else \vskip14\p@ plus6\p@ minus0\p@\unvbox\authorbox@\fi
+  \predate
+  \ifx\thedate@\empty\else \vskip6\p@ plus2\p@ minus0\p@
+    \line{\hfil\thedate@\hfil}\fi
+  \preabstract
+  \ifvoid\abstractbox@\else \vskip20\p@
+    \unvbox\abstractbox@ \fi
+ \nobreak
+  \ifvoid\tocbox@\else\vskip1.5pc plus.5pc \unvbox\tocbox@\fi
+  \prepaper
+  \vskip36\p@\tenpoint}
+
+
+%  Some patches are needed, to make \yr appear in translation information,
+%  and to avoid the spurious unboxing of some empty boxes.
+
+
+%  Add current address to \enddocument
+
+\outer\def\enddocument{\par% \par will do a runaway check for \endref
+  \add@missing\endRefs
+  \add@missing\endroster \add@missing\endproclaim
+  \add@missing\enddefinition
+  \add@missing\enddemo \add@missing\endremark \add@missing\endexample
+ \thetranslator@
+ \count@\z@ \loop\ifnum\count@<\addresscount@\advance\count@\@ne
+ \csname address\number\count@\endcsname
+ \csname email\number\count@\endcsname
+ \repeat
+ \vfill\supereject\end}
+
+
+\newif\ifTurnOffLogo  \TurnOffLogofalse
+
+\def\TurnOffLogo{\global\TurnOffLogotrue
+ \gdef\copyrightline@{\baselineskip2pc
+    \vbox{}}%
+ \let\logo@=\copyrightline@}
+
+
+\def\output@{\shipout\vbox{%
+ \iffirstpage@ \global\firstpage@false
+     \ifTurnOffLogo\else\makeheadline\fi
+       \pagebody \logo@ \makefootline
+	\gdef\rightheadline{\hfill \expandafter\iffalse\botmark\fi
+		  \hfill \llap{\folio}}%
+	\global\advance\vsize by \topskip % 10pt
+     \ifrunheads@
+	\global\advance\vsize by 18\p@ % \makefootline@
+     \fi
+ \else
+	\ifrunheads@ \makeheadline \pagebody
+	       \else \pagebody \makefootline \fi
+ \fi}%
+ \advancepageno \ifnum\outputpenalty>-\@MM\else\dosupereject\fi}
+
+
+%%%% table of contents
+
+\begingroup
+\let\specialhead\relax
+\let\head\relax
+\let\subhead\relax
+\let\subsubhead\relax
+\let\title\relax
+\let\chapter\relax
+
+\gdef\widestnumber{\begingroup \let\head\relax\let\subhead\relax
+  \let\subsubhead\relax \expandafter\endgroup\setwidest@}
+
+\gdef\setwidest@#1#2{%
+   \ifx#1\head\setbox\tocheadbox@\hbox{#2.\enspace}%
+   \else\ifx#1\subhead\setbox\tocsubheadbox@\hbox{#2.\enspace}%
+   \else\ifx#1\subsubhead\setbox\tocsubheadbox@\hbox{#2.\enspace}%
+   \else\ifx#1\key\refstyle A%
+       \setboxz@h{\refsfont@\keyformat{#2}}%
+       \refindentwd\wd\z@
+   \else\ifx#1\no\refstyle C%
+       \setboxz@h{\refsfont@\keyformat{#2}}%
+       \refindentwd\wd\z@
+   \else\ifx#1\page\setbox\z@\hbox{\quad\bf#2}%
+       \pagenumwd\wd\z@
+   \else\ifx#1\item
+       \setboxz@h{#2}\rosteritemwd=\wd\z@
+   \else\ifx#1\itemitem
+       \setboxz@h{#2}\rosteritemitemwd=\wd\z@
+	\advance\rosteritemitemwd by .5pc
+	\advance\rosteritemitemwd by \rosteritemwd
+   \else\ifx#1\itemitemitem
+       \setboxz@h{#2}\rosteritemitemitemwd=\wd\z@
+	\advance\rosteritemitemitemwd by .5pc
+	\advance\rosteritemitemitemwd by \rosteritemitemwd
+   \else\message{\string\widestnumber\space not defined for this
+      option (\string#1)}%
+\fi\fi\fi\fi\fi\fi\fi\fi\fi}
+
+\endgroup
+
+\catcode`\@=13
+
+\def\amsversion{2.1}
+\endinput

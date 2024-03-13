@@ -1,0 +1,751 @@
+%-----------------------------------------------------------------------------
+% Beginning of quotpic.tex
+%-----------------------------------------------------------------------------
+%
+% AMS-TeX 2.0 file for DIMACS volumes.
+%
+\input amstex
+\documentstyle{dimacs}
+\NoBlackBoxes
+\leftheadtext{DEREK F. HOLT AND SARAH REES}
+\rightheadtext{A GRAPHICS SYSTEM FOR FINITELY PRESENTED GROUPS}
+\NoBlackBoxes
+
+\topmatter
+\title 
+A Graphics System for Displaying Finite
+Quotients of Finitely Presented Groups
+\endtitle
+\author Derek F. Holt and Sarah Rees\endauthor
+\address 
+Mathematics Institute,
+University of Warwick,
+Coventry CV4 7AL,
+U.K.
+\endaddress  %address for author one
+\email dfh\@maths.warwick.ac.uk\endemail
+\address
+Mathematics Department,
+University of Newcastle,
+Newcastle NE1 7RU,
+U.K.
+\endaddress %address for author two
+\email sarah.rees\@newcastle.ac.uk\endemail
+
+%  The following items give publication information for the DIMACS logo
+\cvol{00}
+\cvolyear{0000}
+\cyear{0000}
+
+%  Math Subject Classifications 
+\subjclass Primary 20-04, 20F05;\endsubjclass
+\abstract
+We describe a graphics package that the authors are currently developing for
+plotting the finite quotient groups of a given finitely presented group.
+For the graphics display, an X-Windows server is required, which may be
+coloured or black and white.
+\endabstract
+
+\thanks This paper is in final form and no version of it will be submitted for
+publication elsewhere\endthanks
+
+\endtopmatter
+
+\document
+
+\head 1. Introduction                % bold, centered; 
+\endhead                             % don't type final punctuation 
+In this paper, we describe an interactive graphics package that the authors are
+currently developing for plotting the finite quotient groups of a given
+finitely presented group $G$. For the graphics display, an X-windows server is
+required, which may be coloured or black and white. The user must first
+make a file containing the given presentation of $G$; thereafter, all
+computations are done interactively, by using a mouse to select menu options.
+A finite quotient $Q = G/M$ of $G$ is represented in the
+display by a vertex, which can be thought of as being labelled by the normal
+subgroup $M$. Given two such vertices $M$ and $N$ such that $|G/N|$ has
+more prime factors (counted with repetition) than $|G/M|$,
+$N$ will always appear lower than $M$. If $M$ is joined to $N$ either
+by an edge, or by a sequence of edges passing through intermediate vertices,
+then the inclusion $M \supset N$ holds.
+Initially, there will be a single vertex $G$ corresponding to the trivial
+quotient; further vertices are plotted as the corresponding quotients are
+calculated. The system can output a postscript file for producing a good
+hard copy of the lattice that has been plotted.
+
+We did not develop the system with any particular classes of groups in mind.
+However, the order of the quotients that we can plot is highly dependent on the
+particular example, and on the structure of the quotient itself.
+Quotients that are
+extensions of nilpotent groups by groups of small order can often be computed
+(using the $p$-quotient algorithm) up to a very large order (such as
+$p^{1000}$ for a prime $p$, where can be large). 	
+On the other hand, in some examples, such as free groups, and
+groups with a large number of generators, it might be impractical to plot all
+quotients even up to index 20 or 30, since there could be far too many of them.
+The advantage of the
+interactive approach is that we are able to explore the quotient structure
+in those directions in which we are interested, and we are never obliged to
+plot more of them than we want to. In order to have some sort of
+specific goal in mind, we decided to provide at least
+potential access to all quotients up to order 10000.
+To justify this, we prove the following easy result.
+\proclaim {Proposition}
+Let $G$ be a group of order at most \rom {10000}. Then $G$ has a normal soluble
+subgroup $N$, such that $S \subseteq G/N \subseteq $ Aut$(S)$, where $S$ is
+either trivial, or a nonabelian simple group, or isomorphic to $A_5 \times
+A_5$.
+\endproclaim
+\demo{Proof}
+Let $N$ be the maximal normal soluble subgroup of $G$. Then either $N = G$, or
+$G/N$ has a minimal normal subgroup $M/N$ which is a direct product of
+isomorphic finite nonabelian simple groups. Since $|G| \leq 10000$,
+$M/N$ must be either simple or isomorphic to $A_5 \times A_5$. In either case,
+$M/N$ is self-centralizing in $G/N$, and so $G/N \subseteq $ Aut$(M/N)$.
+\enddemo
+
+It is clear that this proposition can easily be made valid up to much larger
+orders by making obvious additions to the list of possibilities for $S$. 
+Guided by this result, we have provided our system with two principal
+facilities. The first is to find the epimorphisms from $G$ onto the
+relevant subgroups of Aut$(S)$, for all appropriate groups $S$. This is done
+interactively by the user, by selecting the group $S$ from a list on a menu.
+The second facility can be described as follows. Given a finite quotient
+$G/M$ of $G$ of sufficiently small order (at most 5000 will do in this case),
+find those quotients $G/N$ of $G$ with $M \supset N$ and $M/N$ an elementary
+abelian $p$-group for some prime $p$. If we can do this, then it is clear from
+the proposition that we can, in principle, find all quotients of $G$ up to the
+required order. We achieve this as follows. First, we use an abelianized
+Reidemeister-Schreier process (as originally programmed by Havas in \cite {1})
+to compute the largest elementary abelian
+$p$-quotient $M/M^{(p)}$ of $M$ for a particular prime $p$ (which the user can
+select from the menu). Then $M/M^{(p)}$ can be regarded as a $K(G/M)$-module,
+where $K$ is the finite field of order $p$, and the normal subgroups $N$ that
+we are seeking correspond precisely to the $K(G/M)$-submodules $N/M^{(p)}$ of
+$M/M^{(p)}$.  In fact there was already in existence an efficient collection
+of programs for computing the submodule lattice of a module over a prime
+field, based on the well-known `Meataxe' algorithm of Richard Parker (see
+\cite{10}). This had been written at Aachen, and we are grateful to the
+Aachen group for allowing us to incorporate these programs into our system, 
+and thereby to complete our requirements (see \cite{8}).
+
+In addition to these basic facilities, we have provided a number of other
+options, which experience has suggested are useful in examples which arise
+in practice. For example, when $G/M$ is not too large, we can compute the
+complete set of abelian invariants of $M/[M,M]$, and thereby determine
+which prime numbers $p$ are relevant. This will also sometimes reveal that
+$M$ and hence $G$ is infinite. We have also provided a version of the
+Canberra $p$-quotient algorithm (until recently, known as the NQA; see, 
+for example,
+\cite{3}) to compute the quotients of the lower exponent-$p$-central series of
+$M$.  The basic lattice operations intersection and join on the vertices
+(thought of as normal subgroups of $G$) are also available; indeed, these can
+be used to ascertain whether or not one vertex is contained in another when
+this is not already clear. Although we are not providing sufficient facilities
+to completely identify a given quotient up to isomorphism, this is possible in
+many cases. As an easy aid to this, it is possible to count the numbers of
+elements of each order in a quotient. This is particularly useful if we are
+trying to distinguish one group from another. The simplest example is the
+use of this technique to distinguish between the dihedral and quaternion
+groups of order 8.
+
+Of course there is a considerable overlap between these facilities and those
+provided by the system SPAS developed in Aachen, and for some particular
+computations that stretch resources to their limits, the best results will
+be obtainable by using SPAS followed by another program, such as the integral
+matrix diagonalization algorithm, as implemented by Havas and Stirling
+(see \cite{4}).
+Although we hope to improve some of our particular implementations in the
+future (or incorporate existing implementations), our principal aim has been
+not so much to push back barriers of effective computability as to provide
+a convenient and user-friendly interface to this particular problem, which
+will hopefully enable the nonexpert user to gain a rapid overview of the
+finite quotient structure of a finitely presented group.
+We have also been guided by the aim of providing the theoretical
+capability of finding all quotients of $G$ up to a given order. Unlike
+in SPAS, we do not make use of the low-index subgroup algorithm (see, for
+example, Section 6 of \cite{9}) to find quotients that have permutation
+representations of small degree. However, we may well decide in the future
+to incorporate this, since it can sometimes lead to more rapid determination
+of particular quotients.
+
+The design of our system is that
+we have a control program {\bf quotpic} which manages the graphics display
+and remembers details of the part of the lattice that has been computed so far.
+This program calls up other programs to perform the individual computations
+required. These other programs input and output from and to files, which are
+read by {\bf quotpic}. The user can of course run these programs
+individually if that should be more convenient, or copy and edit the files
+for use by other programs, but for most of the time, even for an expert user,
+it will be more convenient to work from within {\bf quotpic}.
+
+An essential part of the design of the system
+is that a quotient $G/M$ of sufficiently small order will be stored in a file
+as the regular permutation representation (or equivalently, the Cayley graph) of
+$G/M$. It is for such subgroups $M$ that it is possible to carry out further
+computations on $M$ in order to find larger quotients $G/N$ with $M \supset N$.
+All of the programs that construct such $G/N$ are capable of computing the
+regular permutation representation of $G/N$ provided that the order is
+sufficiently small. (This is  set by default to 10000, but it can easily be
+increased up to at least 100000.) For quotients $G/N$ that are too large,
+this is not possible. We have therefore distinguished between three types
+of vertices, the green (or circular, for those with a black and white screen),
+the yellow (or triangular) and the red (or octagonal). 
+The green vertices are those for which a regular
+permutation representation is stored. For the yellow (or triangular) vertices,
+a faithful but not regular permutation representation of the quotient is stored,
+and for the red no permutation representation is stored. Fewer functions
+are available for yellow and red vertices than for green vertices.
+
+The remainder of this paper is organized as follows. In the second section,
+there is a more detailed description of the control program {\bf quotpic}. In
+the third section, we deal with the individual programs that are called up
+by {\bf quotpic}. Several of these were written in connection with an earlier
+project of the authors to attempt to decide whether two finitely presented
+groups are isomorphic or not (see \cite{7}), and so they have already been
+described and do not require so much detail here. In the fourth
+section, we describe some results and present some illustrations.
+Finally, in the fifth we outline our plans for the future development of the
+program.
+
+We are grateful to Michael Ringe in Aachen for providing us with the code
+for the submodule lattice package, and general assistance in its use,
+and to Steve Rumsby at Warwick for help with programming the X-windows material.
+Helpful suggestions that have influenced the design of the system have been
+received from various people, but particularly from
+George Havas, Joachim Neub\"{u}ser, Mike Newman and Eamonn O'Brien.
+
+\head 2. The X-Window program {\it quotpic}                % bold, centered; 
+\endhead                             % don't type final punctuation 
+The program {\bf quotpic} starts by opening a window on the screen, which contains a
+green circular vertex corresponding to the trivial quotient of $G$. A click
+with the left mouse button opens a menu of available functions, and the user 
+can then start to  construct the lattice from the top down.
+
+As we have already mentioned, {\bf quotpic} constructs vertices of three 
+different 
+types, depending on the amount of information that is held by the program on 
+the corresponding quotient. Different functions are available at the different 
+types of vertices. Whatever the type of the vertex, the menu listing the 
+functions with which the lattice can be built downward from that vertex is
+always opened by a click with the left mouse button near to the vertex. A 
+further click in the menu selects a function, and  causes a parameter menu to
+open if the function requires input parameters. For almost all functions a 
+time parameter limits the amount of time that the program will spend on the 
+function (if time runs out, the program will simply terminate the calculation
+and wait for the user to make another choice). Many functions require
+a prime parameter to be set; sometimes the user needs to select an exponent,
+an exponent-$p$ class (i.e. length of the lower exponent-$p$-central series, see
+\cite{3}) or a permutation group. All such parameters are selected from
+the parameter menu. 
+
+Clicking on the right hand mouse button causes a menu to be opened which 
+allows the selection of general `housekeeping' tasks.  Vertices and edges can
+be deleted, the lattice can be resized or refreshed, hard copies can be taken 
+of the lattice in its current state (a postscript file from which
+a hard copy can be printed is always created on exit from the program, but 
+sometimes it is also useful to have a hard copy of intermediate stages of the 
+calculation), the global parameter which controls the maximal degree for
+which the program would attempt to construct a regular permutation 
+representation can be reset, and the program can be terminated. 
+
+Clicking on the middle mouse 
+button allows the repositioning of vertices. The program automatically
+plots  vertices in such a way that  quotients of the same order are plotted
+along a horizontal line. In fact, if we define the {\it level} of a quotient
+to be the number of primes dividing its order (counted with repetitions), then,
+by default, all quotients with the same level are plotted on the same
+horizontal line. Quotients of the same level but differing orders may be 
+separated vertically using the mouse, but vertices of the same 
+orders may not; thus, if a vertex is moved vertically, all vertices of
+the same order as it move with it. It is not possible to move a vertex
+to a position above vertices of a smaller level than itself.
+
+Information about the results of a function call is given in a special
+output window which opens up as necessary at the bottom of the main program 
+window. The user will be informed if the function was unable to complete
+for some reason, such as lack of available time, or memory (lack of
+memory does not cause {\bf quotpic} to exit), or if the result of
+the calculation was trivial. Also the user will be given information in this 
+window such as how many quotients of the group have been found isomorphic to a
+particular group in the program's list, or how many intermediate
+quotients there are between two previously specified ones (see (e) below),
+and will then be
+invited to choose how many of these to plot. Small message windows issue running
+instructions to the user (e.g. to wait, or select a vertex or edge with the
+mouse).
+
+The full range of functions is available at those (green, circular) vertices 
+corresponding to quotients $G/M$ for which the program holds a regular 
+permutation representation; that is, functions to
+\roster
+\item"(a)" calculate the abelian invariants of $M/[M,M]$, 
+\item"(b)" extend downwards by various abelian sections, 
+\item"(c)" calculate the sequence of orders of elements in $G/M$, 
+\item"(d)" calculate a presentation of $M$ (which is then output to a file), 
+\item"(e)" calculate (and plot as required) all normal subgroups between $M$ 
+and some normal $N \subset M$, where $M/N$ is elementary abelian (and 
+either maximal elementary abelian or a section in a
+lower exponent-$p$-central series),
+\item"(f)" calculate intersections and joins of $M$ with a second normal 
+subgroup (in general, but not always one for which some, not necessarily 
+regular, permutation representation is stored). 
+\endroster
+If $G=M$ we are at the top of the 
+lattice, and then have
+the facility, already mentioned, to find all quotients of $G$ isomorphic to a
+specified  permutation group in our list, and then plot as many of the
+corresponding new vertices as are required by the user.
+Of these facilities, the functions to construct intersections and joins are
+also available at the (yellow, triangular) vertices for which the program 
+holds non-regular
+permutation representations, and in exceptional situations even at
+the (red, octagonal) vertices for which no permutation information is held.
+Provided the order of a quotient is less than the maximum allowed degree for a
+regular permutation representation, the user has the choice of 
+constructing a regular 
+representation  for a yellow vertex, thus turning it into a green vertex, 
+equipped with the full choice of functions.
+Edges are also divided into categories, according to their origins,
+and the different categories of edges are plotted with different
+colours on a colour screen. It is actually the category of the edge joining
+vertices $G/M$ and $G/N$ which determines whether or not  the intermediate
+normal subgroups can be found; thus this facility is potentially available at
+any $G/M$, whatever the type of the vertex.
+ 
+As a new quotient $G/N$ is built from an existing one $G/M$, provided the
+order of $G/N$ is less than 1000, a check is carried out to see whether or
+not the quotient has already been constructed in some other way and, if it
+has, the appropriate edges are drawn to the existing vertex, and no new one 
+is constructed. For higher indices however this check is not carried out
+(because it can be somewhat slow), and it is up to the user to manually
+check for equality between appropriate quotients using the intersection 
+function. A message window indicates to the user that the automatic 
+equality check has not been carried out.
+
+The program does not automatically search for all possible inclusions between
+normal subgroups as it constructs them. This would also be a lengthy business.
+The user can verify a suspected inclusion using the intersection function.
+ 
+
+\head 3. The programs called by {\it quotpic}                % bold, centered; 
+\endhead                             % don't type final punctuation 
+As was mentioned in the Introduction, the first major facility required is
+to compute the epimorphisms from our finitely presented group $G$ onto groups
+$H$ satisfying $S \subseteq H \subseteq$Aut$(S)$, where $S$ is a member of a
+given list of groups. (Since we are interested in the quotients of $G$, we
+regard two such epimorphisms as being equivalent if they have the same kernel
+or, equivalently, if one is equal to the other followed by an automorphism of
+$H$.) This is done using our program {\bf permim}. Since {\bf permim } has
+already been described in some detail in \cite{5} and \cite{7} we shall not
+repeat this here. The relevant groups $H$ are stored as permutation groups in
+a library of files, which contain bases and strong generating sets for the
+groups and also representatives of their conjugacy classes. The user has to
+select the group $S$, and then all epimorphisms onto all groups $H$ between
+$S$ and Aut$(S)$ are sought. Since this number can be very large in some
+examples, the user is informed at the end of the calculation how many of
+them there are onto each of these intermediate groups, and must then decide
+how many of them, if any, to plot on the screen. As
+with all of the programs that are called by {\bf quotpic}, it is also possible
+(indeed mandatory) for the user to impose an upper cpu-time limit on the
+particular process, and it will abort with a message if this limit is
+exceeded. It is a fairly easy matter for the authors to add additional groups
+$S$ to the list if required, but this normally requires doing some
+computations (of conjugacy classes, for example) outside of the system
+(usually in CAYLEY), and then converting the output to our file format.
+
+The second major facility is provided by the programs that use the
+Reide\-meister-Schreier algorithm for computing presentations of a subgroup $H$
+of $G$ (see \cite{1} for a description of the first computer implementation
+of this process).
+In order to describe these, we have to repeat a small amount of the
+material in \cite{7}.
+Let $P$ be a transitive permutation group on
+the finite set $\Omega = \{1,2, \ldots , t\}$,  and let
+$\phi: G \longrightarrow P$ be an
+epimorphism, where
+$G = \langle g_1, g_2, \ldots , g_m | r_1, r_2, \ldots , r_s \rangle$.
+We shall regard the generators $g_i$ as acting on $\Omega$
+via $\phi$.  Let $Q = G_1$ be the stabilizer of
+the point  1  in $P$,  and let $H = \phi^{-1}(Q)$.
+Currently, in the applications to {\bf quotpic}, $H$ is always a normal
+subgroup of $G$ and so $P$ is a regular permutation group, but this
+is not a necessary assumption for most of what follows
+(and in future developments to {\bf quotpic} we shall probably relax this
+restriction).
+For proofs see, for example, Section 4 of \cite{9},
+bearing in mind that $P$ can be regarded as a complete coset table for
+$G$ over the subgroup $H$.
+For each $i$ in $\Omega - \{1\}$,  we can
+regard one particular equation $j^{g_k} = i$ as being the definition of  $i$,
+where $j$ is already defined,  and  1  is regarded as being defined initially.
+This associates an element $g(i)$ of $G$  to each point
+$i$ in $\Omega$, with the property that $1^{g(i)}=i$, where $g(1)=1$ and
+$g(i)=g(j)g_k$ with $j^{g_k}=i$ a definition. The transversal
+$\{ g(i) | 1 \leq i \leq t \}$ is therefore a Schreier transversal as defined
+in \cite{9}.
+To each equation  $j^{g_k} = i$ that is not a definition,
+we can define an element $h(j,k)$ of $H$ by $g(j)g_k = h(j,k)g(i)$. The $h(j,k)$
+then generate $H$.
+We obtain the relators for $H$  as follows. For each relator $r_k$ of $G$ and
+each point $i$ in $\Omega$, we can use the equations $g(j)g_k = h(j,k)g(i)$
+to obtain an equation $g(i)r_k = w(i,k)g(i)$,  where $w(i,k)$ is a word in
+the $h(j,k)$.  Then the $w(i,k)$ form a set of defining relators for $H$
+with respect to the generators $h(j,k)$.
+
+There are now several different ways in which we can proceed, depending on
+what precisely is required. If we want to compute the
+abelian quotient invariants of $H$, we apply
+the standard integer diagonalization algorithm to the presentation, although it is important to
+check for integer overflow, since this becomes a serious danger when the
+index of $H$ in $G$ grows beyond a few hundred. At some stage, we hope to
+install a better implementation that either uses arbitrarily large integers
+or uses modular techniques as described in \cite{4}. To avoid this danger,
+it is possible for the user to choose an integer $m > 0$ and compute the
+largest abelian quotient $H/H^{(m)}$ of $H$ of exponent dividing $m$. The case
+in which $m$ is a prime $p$ has been implemented separately, since it can be
+done much more efficiently than the general case.
+This calculation is feasible for subgroups $H$ of much larger index - in fact,
+it has completed successfully for indices as high as 50000.
+There is also an option to compute the largest such quotient $H/H^{(p)}[G,H]$
+that is centralized by the conjugation action of $G$.
+
+Sometimes we simply want a presentation of the kernel.  (We need that for
+instance if we are going to apply the $p$-quotient algorithm.) This is
+technically more complicated, because we can no longer assume throughout that
+the generators $h(j,k)$ of $H$ commute with each other. Instead, we carry out
+a restricted set of Tietze transformations to remove redundant relators and
+simplify a relator if some cyclic conjugate of it has more than half of its
+length in common with another relator. We only eliminate generators, however,
+when they are either trivial or actually equal to another generator.  The
+reasons for this are discussed in the next paragraph.
+
+Assume now that $H$ is normal in $G$ and that we have used one of the above
+methods to compute a quotient $H/K$ of $H$. Notice that, in each of the cases
+described above, $K$ is characteristic in $H$ and hence normal in $G$.
+Furthermore, we have a definition of $H/K$ (such as a power-commutator
+presentation) in which we can compute efficiently, together with an explicit
+epimorphism $\psi $ from  $H$ to  $H/K$, giving the images of the
+generators $h(j,k)$ of $H$. The elements of $G/K$ have
+the form  $\overline {h}g(j)$,  for $\overline{h}$ in $H/K$ and
+$j = 1,2, \ldots ,t$. Since
+$\overline{h}g(j)g_k = \overline{h} \psi(h(j,k))g(i)$,
+this enables us to construct immediately the
+epimorphism from $G$ to the regular permutation representation of $G/K$.
+For the applications to {\bf quotpic} it is essential to be able to do this
+(at least when $G/K$ is reasonably small), which is the principal reason why
+we have kept the original generators $h(j,k)$ of $H$. As is described in
+\cite{9}, it is often possible to simplify the presentation of $H$
+considerably by applying further Tietze transformations that eliminate
+redundant generators, or indeed to use one of the versions of the
+Reidemeister-Schreier process that uses fewer generators of $H$ to begin with.
+This would make it considerably more complicated for us to compute the
+required permutation representation of $G/K$.  In the future, however, we
+shall be considering including the option to produce smaller presentations of
+$H$ for use in those cases when $G/K$ is too large to compute the regular
+permutation representation. This would probably make it quicker and
+less demanding on storage to compute at least the order of these large
+quotients.
+
+Returning to the Reidemeister-Schreier process, if we assume that $H$ is
+normal in $G$, then the elements $g_l^{-1}h(j,k)g_l$ will lie in $H$.
+By writing the $h(j,k)$ as words in the generators $g_i$, we can
+regard these expressions as relators of $G$, and then express them as words in
+the generators of $H$ as described above. In other words, we can compute the
+conjugation action of the generators of $G$ on those of $H$. This, in turn,
+enables us to compute the conjugation action of $G/H$ on $H/H^{(p)}$ as
+an induced matrix group
+over the field $K$ of order $p$. We can do the same for the action
+of $G/H$ on any of the sections $\gamma_{i}^{p}(H)/\gamma_{i+1}^{p}(H)$ of the
+lower exponent-$p$-central series of $H$ as computed by the $p$-quotient
+algorithm. We can then use the submodule lattice package, which was
+made available to us from Aachen, to compute the $K(G/H)$-submodules of
+this induced module. These correspond precisely to the normal subgroups of
+$G$ that lie between $H$ and $H^{(p)}$, or between $\gamma_{i}^{p}(H)$ and
+$\gamma_{i+1}^{p}(H)$. Since the sublattice package can output generators
+(as vector spaces) of each of the submodules found, there is no difficulty
+in computing the regular permutation representation of the corresponding
+quotient of $G$ (provided, of course, that it has small enough order).
+In fact, since there may be a large number of these submodules, the user must
+choose at the end of the calculation how many, if any, to plot on the screen.
+
+We turn now to the lattice operations, intersection and join. Suppose that
+we have permutation representations of $G$ on sets $\Omega_1$ and
+$\Omega_2$, with kernels $M$ and $N$ respectively.
+We replace $\Omega_2$ by a set that is
+disjoint with $\Omega_1$, and then the natural induced action of $G$ on
+$\Omega_1 \cup \Omega_2$ is a permutation representation of $G$ with kernel
+$M \cap N$. We have provided a program {\bf convrep} which computes the
+permutation representation of a permutation group $P$ in its action by right
+multiplication on the right cosets of a subgroup $Q$ of $P$ and, by taking
+$Q = 1$, we compute the regular permutation representation of the
+quotient $G/M \cap N$ if its order is sufficiently small.
+By comparing the order of this quotient with those of $G/M$ and $G/N$, we
+can decide whether either of $M$ and $N$ is contained in the other, or
+if $M = N$. In case of strict containment, an edge is plotted between the two
+vertices if there is none there already. In case of equality, the two
+vertices will be identified in the graph
+(which might then result in the identification of further edges and vertices).
+
+For the join
+operation, we first calculate the action on $\Omega_2$ of the kernel $M$
+of the action of $G$ on $\Omega_1$. To do this, we find bases
+$b_1, b_2, \ldots ,b_r$ and $c_1,c_2, \ldots, c_s$ of the two permutation
+representations. Then clearly $b_1, \ldots ,b_r, c_1, \ldots, c_s$
+will be a base of the action of $G$ on $\Omega_1 \cup \Omega_2$, and a strong
+generating set with respect to this base will contain generators of the
+subgroup $M$ in its action on $\Omega_2$. Then we apply {\bf convrep} to
+$G^{\Omega_2}$, using $M^{\Omega_2}$ as the subgroup.
+The result will be the regular permutation representation of $G/MN$, which
+is what we want.
+
+Finally, the program {\bf orders}, which counts the number of elements
+of each order in a regular permutation group $P$ on a set $\Omega$, is
+straightforward. For each $i$ in $\Omega$, it
+constructs the unique permutation in $P$ that takes  1  to $i$,  and computes
+the length of the orbit of  1  in this permutation, to give its order.
+
+\head 4. Examples and illustrations                % bold, centered; 
+\endhead                             % don't type final punctuation 
+We start with four examples which we were asked to analyze by Jeff Weeks.
+They arose as fundamental groups of closed manifolds, and he wished to know
+whether they were finite, to help determine whether or not the manifolds
+were hyperbolic.
+These were:
+$$  G_1 = \langle a,b | ab^3a=b^2, a^3=b^5 \rangle,
+ G_2 = \langle a,b | a=b^3a^2b^3, a^3=b^7 \rangle,$$
+$$  G_3 = \langle a,b | a=b^3ab^3, ba^2(b^{-2}a^2ba^2)^2=1 \rangle,
+G_4 = \langle a,b | a^2ba^2=b^3, a^3b^4=1 \rangle.$$
+
+Using {\bf quotpic}, we managed to
+determine the precise structures of $G_1$ and $G_4$,
+both of which turned out to be finite. In fact $G_1 \cong
+SL(2,5) \times C_{13}$ (where  $C_{13}$ is the cyclic group of order 13),
+and $G_4 \cong \hat{S}_4 \times C_{11}$, where
+$\hat{S}_4$ is the 2-fold covering group of $S_4$ that is {\it not}
+isomorphic to $GL(2,3)$. (The `orders' option to count the number of
+elements of each order in a group was used to distinguish between the
+two nonisomorphic 2-fold covering groups of $S_4$.) Having obtained
+the above as quotients of $G_1$ and $G_4$, we succeeded in recognizing
+these quotients as the full group in both cases, by calculating
+presentations of the relevant normal subgroups and finding them to be
+trivial presentations. (Of course, the orders of these groups can also
+be determined very quickly by a Todd-Coxeter coset enumeration.) 
+
+On the other
+hand, $G_2$ and $G_3$ both turned out to be infinite with very many finite
+quotients. For example, $G_2$ has
+a map onto $PSL(2,7)$ of which the kernel has $C_{100} \times C_\infty^6$ as
+maximal abelian quotient, and $G_3$ has a map onto $A_5$  of which the kernel
+has $C_2^2 \times C_\infty^{29}$ as maximal abelian quotient.
+
+As an illustration, Fig. 1 shows two views of what the user sees when
+carrying out this computation in $G_1$. Although it cannot be seen in these
+pictures, selecting the `ab. invariants' menu option shows us that the maximal
+abelian quotient of $G_1$ itself has order 13. This proves that $G_1$ has
+the 2-fold cover of $A_5$ (i.e. $SL(2,5)$) as a direct factor, rather than
+$A_5 \times C_2$, and so the structure of the group is unambiguous. The
+vertex representing the quotient of order 1560 is triangular (or yellow) in
+the first picture. The menu item `conv. to reg. rep.' was then selected to
+compute the regular permutation representation of this quotient, which
+automatically converted the vertex to circular (green), and then the full
+menu of operations became available. It was then possible to select the
+menu option `rep. kernel', which computed a presentation of the normal
+subgroup corresponding to this vertex, and this presentation turned out to be
+trivial.
+
+\topinsert
+\special{psfile=quotpicfig1}
+\vskip 67mm
+\botcaption {Figure 1} \endcaption
+\endinsert
+
+Our next illustrative example is the Hurwitz group
+$G = \langle x,y | x^2=y^3=(xy)^7=1 \rangle$.
+In Fig. 2, we have found the (unique) epimorphisms of $G$
+onto the simple groups $PSL(2,7)$ and $PSL(2,8)$. The maximal abelian quotients
+of their kernels were $C_\infty^6$ and $C_\infty^{14}$ respectively. We
+have then plotted the maximal elementary abelian  $p$-quotients of these
+kernels, for $p=2$ and 3 in the first case and $p=2$ in the second, and used
+the `intermediate quotient' (`Meataxe') option to find and plot
+all intermediate quotients. The original edges representing the full
+elementary abelian quotients have been removed where possible, in order
+to clarify the diagram. Notice that many of the vertices are octagonal (red).
+Finally, in order to illustrate the parameters
+section of the menu, we have taken the picture while it was in the process
+of calculating the maximal elementary abelian 5-quotient of one of the
+normal subgroups.
+
+\topinsert
+\special{psfile=quotpicfig2}
+\vskip 115mm
+\botcaption {Figure 2} \endcaption
+\endinsert
+
+The following  interesting example was proposed some years ago by Heineken.
+$G = \langle x,y,z | [[x,[x,y]]=z, [[y,[y,z]]=x, [z,[z,x]]=y  \rangle$.
+Neub\"{u}ser in Aachen discovered that it had an epimorphism onto $A_5$
+of which the kernel had a quotient of class 5 and order $2^{24}$. No other
+quotients of this group are known. In Fig. 3, we have applied the
+$p$-quotient algorithm to the kernel of the map onto $A_5$ to obtain the
+terms in the descending 2-central series. These occur down the main diagonal
+in the picture. In addition, we have found those intermediate quotients
+that lie between the successive terms of the series, and plotted these to
+the left of the main diagonal. In particular, we notice that the two
+layers of order $2^5$ have different submodule structures. (In fact, there
+are two nonisomorphic $A_5$-modules of order $2^4$ involved in this sequence,
+and the `Meataxe' package does distinguish between them, but we have not yet
+made it possible to display this information.) Finally, we have opened the
+global menu.
+
+\topinsert
+\special{psfile=quotpicfig3}
+\vskip 123mm
+\botcaption {Figure 3} \endcaption
+\endinsert
+
+As a final example, we should like to mention a group that was
+produced at the DIMACS conference itself by Leonard Soicher and Jon Hall.
+This has 5 involutory generators and far too many relations to write
+down here. (The interested reader could obtain the presentation from
+us, or from them.) The conjecture is that it defines the largest
+3-transposition group generated by 5 transpositions, such that no two
+transpositions commute. If so, then it should be an extension of a large 
+3-group by a group of order 2. We discovered, by using the $p$-quotient
+algorithm from within {\bf quotpic}, that it has a quotient that is
+an extension of a group of order $3^{49}$ (and exponent-3-class 6)
+by a group of order 2, and that this is the largest quotient of this form.
+We found no other finite quotients of this group. This information is
+therefore consistent with the conjecture.
+
+\head 5. Future development                % bold, centered; 
+\endhead                             % don't type final punctuation 
+{\bf quotpic} is still very much under development.
+We have plans to
+\roster
+\item"(a)" include a low index subgroup algorithm (see Section 6 of \cite{9}).
+This would give an alternative approach to that of {\bf permim}, and would 
+allow us to hold several permutation representations of the same quotient. 
+\item"(b)" allow the possibility of applying the Reidemeister-Schreier related
+programs to the point stabilizers in non-regular permutation representations
+(which are in general not normal subgroups). The examination of non-normal
+subgroups has been used in the past both to prove infiniteness (see \cite{6}), 
+and to distinguish between non-isomorphic groups (see \cite{2}). 
+\item"(c)" replace our own implementation of the Canberra $p$-quotient program
+by the much more efficient implementation of Eamonn O'Brien and Mike
+Newman. 
+\item"(d)" include the general nilpotent quotient algorithm, as implemented by
+Werner Nickel. This will enable us to gather information also about infinite
+nilpotent sections.
+\item"(e)" make it possible for {\bf quotpic} to look for all maps onto 
+{\it any} permutation group on which the user has supplied information,
+rather than restrict to a specific list of permutation groups held by the 
+program.  
+\endroster
+
+We are keen to receive comments from users about our program, and will 
+be very pleased to give copies (via magnetic tape or FTP)
+to anyone who asks for it.
+We invite suggestions for improvements, and would like any bugs, or
+odd behaviour to be reported; ideally a bug report should be accompanied by a
+copy of the presentation input to the program, together with the log file
+created by {\bf quotpic}.
+
+The files that can be collected via anonymous FTP are compressed UNIX tarred
+files named isom{\it i}.tar.Z for $i = 1,2,3, \ldots $. They can be found
+either in the directory pub/local/nser on the machine tuda.ncl.ac.uk or in the
+directory pub/sources/geom on the machine amazon.warwick.ac.uk.
+
+\Refs
+
+\ref \no 1
+\by G. Havas
+\paper A Reidemeister-Schreier program
+\inbook  Proceedings of the
+Second International Conference on the Theory of Groups, Canberra 1973,
+Lecture Notes in Math., vol. 372,
+\ed M.F. Newman
+\publ   Springer-Verlag \publaddr Berlin and New York
+\yr 1974 \pages 347--356
+\endref
+\ref \no 2
+\by G. Havas and L.G.Kov\'{a}cs
+\paper Distinguishing eleven crossing knots
+\inbook Computational Group Theory
+\ed M. Atkinson
+\publ Academic Press \publaddr London
+\yr 1984
+\pages 367--73
+\endref
+\ref \no 3
+\by G. Havas and M.F. Newman
+\paper Applications of computers to questions like those of Burnside
+\inbook Burnside Groups, Lecture Notes in Math., vol. 806,
+\ed J.L. Mennicke
+\publ   Springer-Verlag \publaddr Berlin and New York
+\yr 1980 \pages 211--30
+\endref
+\ref \no 4
+\by  G. Havas and L. Sterling
+\paper Integer matrices and abelian groups
+\inbook Symbolic and Algebraic Computation,
+Lecture Notes in Computer Science, vol. 72,
+\ed E.W. Ng
+\publ   Springer-Verlag \publaddr Berlin and New York
+\yr 1979 \pages 431--451
+\endref
+\ref \no 5
+\by D. F. Holt and W. Plesken
+\book Perfect Groups
+\publ Oxford University Press
+\yr 1989
+\endref
+\ref \no 6
+\by D. F. Holt and W. Plesken
+\paper A cohomological criterion for a finitely presented group to be 
+infinite
+\toappear
+\endref
+\ref \no 7
+\by D. F. Holt and Sarah Rees
+\paper Testing for isomorphism between finitely presented groups
+\inbook Groups, Combinatorics and Geometry, LMS Lecture Note Series 165,
+\eds M.W. Liebeck and J. Saxl
+\publ Cambridge University Press
+\yr 1992
+\pages 459--475
+\endref
+\ref \no 8
+\by  K. Lux, J. M\"uller and M. Ringe
+\paper Peakword condensation and submodule lattices,
+an application of The Meat-Axe
+\toappear
+\endref
+\ref \no 9
+\by  J. Neub\"{u}ser
+\paper An elementary introduction to coset table methods in
+computational group theory
+\inbook  Groups - St Andrews 1981, LMS Lecture Note Series 71,
+\eds C. M.  Campbell and E. F. Robertson
+\publ Cambridge University Press
+\yr 1982
+\pages 1--45
+\endref
+\ref \no 10
+\by R. Parker
+\paper The computer calculation of modular characters.  (The Meat-Axe)
+\inbook Computational Group Theory
+\ed M. Atkinson
+\publ Academic Press \publaddr London
+\yr 1984
+\pages 267--74
+\endref
+
+\endRefs
+
+\enddocument
+
+%-----------------------------------------------------------------------------
+% End of fpgroups.tex
+%-----------------------------------------------------------------------------
+

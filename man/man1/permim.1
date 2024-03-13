@@ -1,0 +1,231 @@
+.\" permim isom.d/man/man1 file permim.1
+.\" @(#)date.1v 1.11 88/02/25 SMI;
+.TH permim 1 "28 January 1994" "Geometry Group" "Geometry Group's manual"
+.SH NAME
+permim \- find homomorphic images of a finitely presented group in a finite
+permutation group
+.SH SYNOPSIS
+.B permim
+[
+.B \-h
+] [
+.B \-s
+] [
+.B \-sub
+] [
+.B \-T
+] [
+.B \-t
+.I maxtime
+] [
+.B \-n
+.I maxhoms
+]
+.I permgpname
+[
+.I gpname
+]
+.SH DESCRIPTION
+If
+.I gpname
+is not specified on the command-line, then
+.B permim
+reads from standard input. Otherwise (and more usually),
+.B permim
+takes input from the file
+.I gpname,
+or from
+.I gpname\fP.ordrels
+if the latter file is present.
+In any case, the input should contain a finite presentation of a group
+.I G.
+It is recommended that
+.br
+.B ordrels
+.I gpname
+.br
+be run before running
+.B permim
+because this usually results in
+.B permim running more efficiently.
+Output is sent to files
+.I gpname.permgpname\fPpermim
+and
+.I gpname.permgpname\fPpermim\fIn\fP, where
+.I n
+is an integer,
+in the first case, and to standard output in the second.
+Input should conform to Geometry group standard format.
+.PP
+By default,
+.B permim
+finds a representative of each class of epimorphisms of
+.I G
+onto the finite permutation group
+.I P
+specified by the
+.I permgpname
+argument. If the
+.B \-h
+argument is used, then it finds a representative of each class of
+homomorphisms of
+.I G
+into
+.I P.
+Two homomorphisms are said to be in the same class, if one is equal to the
+other followed by an inner automorphism of
+.I P.
+.PP
+.I permgpname
+may be one of a small collection of nonabelian groups of small order, 
+or any of the finite simple groups of order up to one million, or the
+automorphism group of a finite simple group of order up to 6048.
+More precisely, it may be one of the following: 
+.IP
+D6 D8 Q8 A4 D10 D14 Fr20 Fr21 S4 A4c
+.IP
+A5 L3,2 L2,7 A6 L2,8 L2,11 L2,13 L2,17 A7 L2,19 L2,16 L3,3 U3,3 L2,23 L2,25 M11
+L2,27 L2,29 L2,31 A8 L3,4 L2,37 U4,2 Sz8 L2,32 L2,41 L2,43 L2,47 L2,49 U3,4
+L2,53 M12 L2,59 L2,61 U3,5 L2,67 J1 L2,71 A9 L2,73 L2,79 L2,64 L2,81 L2,83
+L2,89 L3,5 M22 L2,97 L2,101 L2,103 J2 L2,107 L2,109 L2,113 L2,121 L2,125 Sp4,4,
+Sp6,2.
+.IP
+S5 PGL2,7 AutA6 AutL2,8 PGL2,11 PGL2,13 PGL2,17 S7 PGL2,19 AutL2,16 AutL3,3
+AutU3,3
+.PP
+The required data for these groups is contained in the directory PERMDIR
+(see under FILES below).
+It is also possible for the user to provide a different target permutation
+group, by using
+.B sg(1)
+to create a file
+.I permgpname\fP.sg
+containing a base and set of strong generators for the permutation group.
+However, the program will run less efficiently than it will with the groups
+in the database, since additional information on the groups is present
+there.
+.PP
+The output of 
+.B permim
+is designed to be used with the
+.B \-p
+option of
+.B findisoms(1),
+and with programmes that use permutation groups as input, such as
+.B subpquot(1),
+.B subgp(1), sg(1)
+and
+.B subabquot(1).
+.PP
+The input must occur in the following order.
+.br
+(i) Generators, given as a list of gens (or words).
+This defines the order of the generators.
+.br
+(ii) (Optional) Table of inverses.
+If the inverse of a generator
+.I g
+is not given explicitly, then
+it will be put equal to
+.I g^-1
+by default and, if
+.I g^-1
+was not present
+in the list of generators, then it will be inserted immediately after
+.I g.
+Of course the inverse of
+.I g^-1
+will be
+.I g.
+(If, however,
+.I g*g
+is later discovered in the list of relators, then the inverse of
+.I g
+will be redefined to be
+.I g.
+) Alternatively, if the line
+.IP
+.nf
+inverses {case_change}
+.fi
+.PP
+is present in the input, then all generators must be single letters, and
+inverses will be defined by case change (i.e. inv(\fIg\fP) = \fIG\fP).
+.br
+(iii) List of relators.
+.br
+(iv) (Optional) A
+.I relinvolve
+section, containing the
+.I relinvolve
+sequence.
+(see
+.B ordrels(1)
+).
+.PP
+The output is as follows. For each epimorphism (or homomorphism) to
+.I P
+that is found,  a
+.I perm_gp
+section is output, giving the images of each of the generators. These are
+either all sent to stdout, or a separate file
+.I gpname.permgpname\fPpermim\fIn\fP
+is used for each image.
+The order of permutations output is as in the file
+.I gpname
+and not as in
+.I gpname\fP.ordrels,
+in order to maintain compatibility with other programs.
+Finally, the total number of epimorphisms (or homomorphisms) is written
+to stdout or to the file
+.I gpname.permgpname\fPpermim.
+.SH OPTIONS
+.IP \fB\-h\fP
+Find all classes of homomorphisms of
+.I G
+into
+.I P.
+.IP \fB\-s\fP
+Stop after the first epimorphism is found.
+.IP \fB\-sub\fP
+In this case the permutation group must be one of the automorphism groups
+of the finite simple groups in the list above. If this is Aut(P), then
+epimorphisms onto all of the subgroups of Aut(P) that contain P are counted
+(separately). This option cannot be used together with \fB\-h\fP.
+.IP \fB\-T\fP
+Output only the total number of images found.
+.IP \fB\-t
+.I maxtime
+.br
+Stop (and give up, writing a message to stderr) after
+.I maxtime
+seconds.
+.IP \fB\-n
+.I maxhoms
+.br
+Stop (and give up) after
+.I maxhoms
+epimorphisms have been found.
+.SH SEE ALSO
+.B ordrels(1)
+.br
+.B findisoms(1)
+.br
+.B subpquot(1)
+.br
+.B subgp(1)
+.br
+.B sg(1)
+.br
+.B subabquot(1)
+.SH DIAGNOSTICS
+Exit code is normally 0, even if the program exits through lack of time or
+space. It is 2 if the command-line is wrong, or if there is an error in
+reading the input files or data.
+.SH FILES
+PERMDIR = `home-directory'/isom.d/permgps
+.br
+where `home-directory' is the user's directory that contains the main
+isom.d directory.
+PERMDIR is defined in the makefile,
+and contains the data pertaining to the permutation groups.

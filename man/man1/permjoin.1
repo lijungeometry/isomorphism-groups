@@ -1,0 +1,61 @@
+.\" permjoin isom.d/man/man1 file permjoin.1
+.\" @(#)date.1v 1.11 88/02/25 SMI;
+.TH permjoin 1 "31 August 1992" "Geometry Group" "Geometry Group's manual"
+.SH NAME
+permjoin \- compute the join of two permutation representations of a group
+.SH SYNOPSIS
+.B permjoin
+[
+.B \-m
+maxopdeg
+]
+.I gpname rep1 rep2 repsum newrep
+.SH DESCRIPTION
+.B permjoin
+takes input from the files
+.I gpname.rep1,
+.I gpname.rep2,
+and
+.I gpname.repsum,
+which are assumed to contain permutation representations of the same
+finitely presented group defined in
+.I gpname
+(and so they should have the same numbers of generators).
+It also uses the files
+.I gpname.rep2.sg,
+and
+.I gpname.repsum.sg,
+and so
+.B sg(1)
+must be run as necessary before running
+.B permjoin.
+The file
+.I gpname.repsum
+is assumed to be the output of a previous run of
+.B permsum(1)
+applied to
+.I gpname.rep1
+and
+.I gpname.rep2.
+The output is to the file
+.I gpname.newrep
+and contains the regular permutation representation of the
+join of the two representations,
+provided that the degree of this representation is not greater than
+.I maxopdeg
+(default is 9999);
+that is, if the permutation representions in
+.I gpname.rep1
+and
+.I gpname.rep2
+have kernels \fIH\fP1 and \fIH\fP2,
+then the kernel of the new representation will be the join of
+\fIH\fP1 and \fIH\fP2.
+.SH SEE ALSO
+.B permsum(1)
+.br
+.B sg(1)
+.SH DIAGNOSTICS
+Exit code is 0 even if the degree of the output representation is too large,
+and is not output. It is 2 only if there command-line is wrong or if there
+is an error reading the input files or data.

@@ -1,0 +1,404 @@
+%!
+/scaletimes
+{/Times-Roman findfont
+  exch scalefont
+  setfont } def
+
+/scalesymbol
+{/Symbol findfont
+  exch scalefont
+  setfont } def
+
+0.084 0.084 scale
+3860 1000 translate
+
+150 scaletimes
+-550 -500 moveto
+(Fig. 1) show
+
+150 scaletimes
+6 setlinewidth
+newpath
+-373 1938 29 0 360 arc
+stroke
+newpath
+-373 1938 58 0 360 arc
+stroke
+-313 1993 moveto
+%(1) show
+newpath
+-559 1702 moveto
+-505 1716 lineto
+-491 1662 lineto
+stroke
+newpath
+-597 1560 moveto
+-403 1887 lineto
+stroke
+newpath
+1694 1938 29 0 360 arc
+stroke
+newpath
+1694 1938 58 0 360 arc
+stroke
+1754 1993 moveto
+%(2) show
+newpath
+517 1978 moveto
+557 1938 lineto
+517 1899 lineto
+stroke
+65 1954 translate
+0 rotate
+0 0 moveto
+(a)show
+0 0 moveto
+0 rotate
+-65 -1954 translate
+newpath
+-314 1938 moveto
+1635 1938 lineto
+stroke
+newpath
+-2252 1938 29 0 360 arc
+stroke
+newpath
+-2252 1938 58 0 360 arc
+stroke
+-2192 1993 moveto
+%(3) show
+newpath
+-1179 1899 moveto
+-1219 1938 lineto
+-1179 1978 lineto
+stroke
+-890 1954 translate
+0 rotate
+0 0 moveto
+(A)show
+0 0 moveto
+0 rotate
+890 -1954 translate
+newpath
+-433 1938 moveto
+-2193 1938 lineto
+stroke
+newpath
+-373 3359 29 0 360 arc
+stroke
+newpath
+-373 3359 58 0 360 arc
+stroke
+-313 3414 moveto
+%(4) show
+newpath
+-413 2538 moveto
+-373 2578 lineto
+-334 2538 lineto
+stroke
+-389 2418 translate
+90 rotate
+0 0 moveto
+(b)show
+0 0 moveto
+-90 rotate
+389 -2418 translate
+newpath
+-373 1998 moveto
+-373 3299 lineto
+stroke
+newpath
+-373 413 29 0 360 arc
+stroke
+newpath
+-373 413 58 0 360 arc
+stroke
+-313 468 moveto
+%(5) show
+newpath
+-334 1292 moveto
+-373 1252 lineto
+-413 1292 lineto
+stroke
+-357 1600 translate
+-90 rotate
+0 0 moveto
+(B)show
+0 0 moveto
+90 rotate
+357 -1600 translate
+newpath
+-373 1879 moveto
+-373 473 lineto
+stroke
+newpath
+1892 1943 198 198.628747 164.251279 arc
+stroke
+newpath
+1754 2030 moveto
+1704 2004 lineto
+1678 2054 lineto
+stroke
+1898 2157 translate
+-1 rotate
+0 0 moveto
+(a)show
+0 0 moveto
+1 rotate
+-1898 -2157 translate
+newpath
+468 2297 29 0 360 arc
+stroke
+507 2331 moveto
+%(6) show
+340 2370 moveto
+(aA)show
+150 scalesymbol
+(\256\145) show
+150 scaletimes
+newpath
+1169 2051 moveto
+1142 2100 lineto
+1191 2127 lineto
+stroke
+847 2203 translate
+-16 rotate
+0 0 moveto
+(A)show
+0 0 moveto
+16 rotate
+-847 -2203 translate
+newpath
+1637 1955 moveto
+496 2289 lineto
+stroke
+newpath
+774 2522 moveto
+763 2578 lineto
+818 2588 lineto
+stroke
+1005 2431 translate
+-34 rotate
+0 0 moveto
+(b)show
+0 0 moveto
+34 rotate
+-1005 -2431 translate
+newpath
+1645 1972 moveto
+-324 3325 lineto
+stroke
+newpath
+819 1244 moveto
+763 1252 lineto
+772 1307 lineto
+501 1107 moveto
+557 1099 lineto
+546 1044 lineto
+stroke
+977 1429 translate
+36 rotate
+0 0 moveto
+(B)show
+-900 0 moveto
+(a) show
+0 0 moveto
+-36 rotate
+-977 -1429 translate
+newpath
+1646 1903 moveto
+-325 448 lineto
+stroke
+newpath
+-1166 1619 29 0 360 arc
+stroke
+-1127 1653 moveto
+%(7) show
+-1300 1500 moveto
+(Aa)show
+150 scalesymbol
+(\256\145) show
+150 scaletimes
+newpath
+-1790 1844 moveto
+-1763 1795 lineto
+-1813 1768 lineto
+stroke
+-2017 1886 translate
+-16 rotate
+500 0 moveto
+(a)show
+0 0 moveto
+16 rotate
+2017 -1886 translate
+newpath
+-2195 1921 moveto
+-1194 1628 lineto
+stroke
+newpath
+-2450 1938 198 377.188734 342.811266 arc
+stroke
+newpath
+-2589 2025 moveto
+-2639 2000 lineto
+-2664 2049 lineto
+stroke
+-2447 2152 translate
+0 rotate
+0 0 moveto
+(A)show
+0 0 moveto
+0 rotate
+2447 -2152 translate
+newpath
+-1462 2585 moveto
+-1407 2578 lineto
+-1414 2522 lineto
+-1164 2713 moveto
+-1219 2720 lineto
+-1212 2776 lineto
+stroke
+-1628 2430 translate
+37 rotate
+-80 0 moveto
+(b)show
+820 0 moveto
+(A) show
+0 0 moveto
+-37 rotate
+1628 -2430 translate
+newpath
+-2205 1974 moveto
+-420 3323 lineto
+stroke
+newpath
+-1412 1308 moveto
+-1407 1252 lineto
+-1462 1246 lineto
+-1214 1043 moveto
+-1219 1099 lineto
+-1164 1105 lineto
+stroke
+-1613 1440 translate
+-39 rotate
+-80 0 moveto
+(B)show
+820 0 moveto
+(A) show
+0 0 moveto
+39 rotate
+1613 -1440 translate
+newpath
+-2206 1901 moveto
+-419 451 lineto
+stroke
+newpath
+1674 3359 29 0 360 arc
+stroke
+1713 3393 moveto
+%(8) show
+1730 3329 moveto
+(ba) show
+150 scalesymbol
+(\256) show
+150 scaletimes
+(ab) show
+newpath
+508 3398 moveto
+548 3359 lineto
+508 3319 lineto
+stroke
+61 3375 translate
+0 rotate
+0 0 moveto
+(a)show
+0 0 moveto
+0 rotate
+-61 -3375 translate
+newpath
+-314 3359 moveto
+1644 3359 lineto
+stroke
+newpath
+-378 3557 198 288.586583 254.209115 arc
+stroke
+newpath
+-516 3643 moveto
+-566 3618 lineto
+-592 3668 lineto
+stroke
+-391 3770 translate
+3 rotate
+0 0 moveto
+(b)show
+0 0 moveto
+-3 rotate
+391 -3770 translate
+newpath
+-802 2322 29 0 360 arc
+stroke
+-763 2356 moveto
+%(10) show
+-1000 2200 moveto
+(bB)show
+150 scalesymbol
+(\256\145) show
+150 scaletimes
+newpath
+-514 2914 moveto
+-566 2892 lineto
+-587 2944 lineto
+stroke
+-674 2672 translate
+67 rotate
+0 0 moveto
+(B)show
+0 0 moveto
+-67 rotate
+674 -2672 translate
+newpath
+-396 3304 moveto
+-790 2349 lineto
+stroke
+newpath
+-39 1524 29 0 360 arc
+stroke
+0 1558 moveto
+%(13) show
+-150 1600 moveto
+(Bb) show
+150 scalesymbol
+(\256\145) show
+150 scaletimes
+newpath
+-272 887 moveto
+-223 913 lineto
+-196 864 lineto
+stroke
+-148 1216 translate
+73 rotate
+0 0 moveto
+(b)show
+0 0 moveto
+-73 rotate
+148 -1216 translate
+newpath
+-356 470 moveto
+-48 1496 lineto
+stroke
+newpath
+-371 215 198 107.918020 73.540552 arc
+stroke
+newpath
+-509 302 moveto
+-559 276 lineto
+-584 326 lineto
+stroke
+-358 2 translate
+3 rotate
+0 -95 moveto
+(B)show
+0 0 moveto
+-3 rotate
+358 -2 translate
+showpage

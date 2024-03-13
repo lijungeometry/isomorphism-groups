@@ -1,0 +1,50 @@
+.\" quotpic isom.d/man/man1 file quotpic.1
+.\" @(#)date.1v 1.11 88/02/25 SMI;
+.TH quotpic 1 "28 January 1994" "Geometry Group" "Geometry Group's manual"
+.SH NAME
+quotpic \- an X-Windows graphics package for computing and displaying
+quotients of a finitely presented group
+.SH SYNOPSIS
+.B quotpic
+[
+.B \-b
+] [
+.B \-d
+display-name
+] [
+.B \-f
+font-name
+] [
+.B \-m
+.I maxregdeg
+] [
+.B \-n
+.I maxhoms
+] [
+.B \-p
+permutation group list
+] [
+.B \-q
+] [
+.B \-r
+]
+gpname
+.SH DESCRIPTION
+.B quotpic
+is an X-windows program that must be run on an X-server. It opens a
+window (with title
+.I gpname)
+in which will be drawn part of the normal subgroup
+lattice of a finitely presented group
+.I G.
+Before running the program, the user must supply
+a presentation of the group  G, in our standard format, in the file
+.I gpname.
+.PP
+The easiest way to learn to use this program is to play with it. However,
+more information is contained in the file QUOTPICINFO in the main
+isom.d directory.
+.B quotpic
+calls many of other programs in isom.d; these are listed in QUOTPICINFO.
+For information on the format of the input file, see the file
+FORMATINFO in the isom.d directory.

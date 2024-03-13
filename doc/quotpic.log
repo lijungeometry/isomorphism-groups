@@ -1,0 +1,96 @@
+This is TeX, Version 3.1415 (C version 6.1) (format=plain 96.1.5)  29 MAR 1996 11:17
+**quotpic
+(quotpic.tex (/usr/local/lib/texmf/tex/amstex-2.1d/amstex.tex
+
+AmS-TeX- Version 2.1
+COPYRIGHT 1985, 1990, 1991 - AMERICAN MATHEMATICAL SOCIETY
+Use of this macro package is not restricted provided
+each use is acknowledged upon publication.
+
+Loading definitions for misc utility macros, page layout, accents/punctuation,
+line and page breaks, figures, comments, math spacing, fractions,
+smash commands, large operator symbols, integrals, operator names,
+multilevel sub/superscripts, matrices, multiline displays,
+continued fractions, compound symbols, various kinds of dots,
+special superscripts, \text, math font commands, \newsymbol,
+bold Greek and bold symbols, Euler fonts, math accents, roots,
+commutative diagrams, poor man's bold, syntax check, ... finished)
+
+(dimacs.sty (ams-p.sty (/usr/local/lib/texmf/tex/amstex-2.1d/amsppt.sty
+version 2.1d (14-Dec-1993): Loading utility definitions, more fonts,
+symbol names (/usr/local/lib/texmf/tex/amstex-2.1d/amssym.tex) ,
+page dimension settings, top matter, section heads,
+theorems/proofs/definitions/remarks, rosters, footnotes, figures and captions,
+miscellaneous, references, end of document, output routine,
+hyphenation exceptions (U.S. English)
+
+) (ams-spec.sty))) [1] [2]
+Underfull \vbox (badness 10000) has occurred while \output is active
+\vbox(588.0+1.94444)x360.0
+.\glue(\topskip) 3.05556
+.\hbox(6.94444+1.94444)x360.0, glue set 0.08926
+..\tenrm a
+..\tenrm n
+..\tenrm o
+..\tenrm t
+..\tenrm h
+..etc.
+.\penalty 10000
+.\glue(\baselineskip) 3.11111
+.\hbox(6.94444+1.94444)x360.0, glue set 156.47182fil
+..\tenrm t
+..\tenrm h
+..\tenrm e
+..\glue 3.33333 plus 1.66666 minus 1.11111
+..\tenrm d
+..etc.
+.etc.
+
+ [3]
+[4] [5]
+Underfull \vbox (badness 10000) has occurred while \output is active
+\vbox(588.0+1.94444)x360.0
+.\glue(\topskip) 2.5
+.\hbox(7.5+2.5)x360.0, glue set 0.1679
+..\tenrm s
+..\tenrm a
+..\tenrm t
+..\tenrm i
+..\tenrm s
+..etc.
+.\glue(\baselineskip) 2.55556
+.\hbox(6.94444+1.94444)x360.0, glue set - 0.10881
+..\tenrm w
+..\kern-0.27779
+..\tenrm e
+..\glue 3.33333 plus 1.66666 minus 1.11111
+..\tenrm a
+..etc.
+.\glue(\baselineskip) 3.11111
+.etc.
+
+ [6]
+Underfull \vbox (badness 10000) has occurred while \output is active
+\vbox(588.0+1.94444)x360.0
+.\glue(\topskip) 1.12108
+.\hbox(8.87892+2.5)x360.0, glue set 0.7831
+..\teni H
+..\kern0.81247
+..\kern-0.55556
+..\teni =
+..\teni H
+..etc.
+.\glue(\baselineskip) 2.55556
+.\hbox(6.94444+1.94444)x360.0, glue set 0.16869
+..\tenrm b
+..\kern0.27779
+..\tenrm e
+..\tenrm e
+..\tenrm n
+..etc.
+.\glue(\baselineskip) 3.11111
+.etc.
+
+ [7]
+[8] [9] [10] [11] [12] )
+Output written on quotpic.dvi (12 pages, 51600 bytes).

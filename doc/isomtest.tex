@@ -1,0 +1,818 @@
+\title{ Testing for isomorphism between finitely presented groups.}
+\author{ D.F.Holt and Sarah Rees} 
+\documentstyle[12pt]{article}
+\setlength{\textwidth}{13.8cm}
+\setlength{\topmargin}{0.5cm}
+\setlength{\headheight}{0cm}
+\setlength{\headsep}{0cm}
+\setlength{\topskip}{0cm}
+\setlength{\textheight}{21.7cm}
+\setlength{\oddsidemargin}{1.3cm}
+\setlength{\evensidemargin}{1.3cm}
+\setlength{\labelwidth}{0cm}
+\setlength{\leftmargin}{0cm}
+\setlength{\listparindent}{0cm}
+\setlength{\baselineskip} {15pt}
+\newtheorem{lemma}{Lemma}[section]
+\newenvironment{proof}{\normalsize {\sc Proof}:}{{\hfill $\Box$}}
+
+\begin{document}
+\maketitle
+\section{Introduction}
+
+The purpose of this paper is to describe a
+computer program that attempts to decide whether two given finitely
+presented groups are isomorphic or not. This problem has of course
+been proved to be undecidable in general, and so any such program is
+bound to fail on some inputs, but we might nevertheless hope to achieve
+success in many cases. The basic idea is that we try to
+prove isomorphism and nonisomorphism alternately, for increasing periods of
+time, hoping that eventually we will succeed in one of these two aims.
+
+We attempt to prove isomorphism, by running the Knuth-Bendix procedure on the
+group presentations, in order to generate a word reduction algorithm for
+words in the generators. In cases of success, this will enable us to verify that
+a particular map from one group to the other is an isomorphism. In order to
+find this map, we have to use an exhaustive search, which often becomes
+rapidly impractical as the word lengths of the images of the generators under
+the map increase. We can offset this a little by using various additional tests,
+such as checking that the induced map between the abelian quotients is
+an isomorphism, or capable of being extended to an isomorphism when only
+some of the generator images are known. In addition, if both groups can be
+mapped onto a suitable finite permutation group, then we can check that our
+map or partial map can induce an automorphism of the permutation group. In
+principle, if the two groups are isomorphic, then this algorithm would
+eventually find an explicit isomorphism, but in practice the required time
+would eventually be prohibitive in many cases.
+
+We attempt to prove nonisomorphism by examining the finite quotients of the
+two groups, and checking to see if they correspond. In contradistinction to
+the isomorphism test, this approach cannot be guaranteed to work in general,
+even in principle, since there are certainly nonisomorphic groups whose finite
+quotients are the same; for example, finitely presented infinite simple
+groups. Furthermore, for reasons of space, it is only possible to look
+for finite quotients of reasonably small order (up to about 50,000), and in the
+case of finite nonabelian simple images, we have to look for epimorphisms
+onto each simple group individually. However, for various classes of groups
+that arise naturally from geometry and topology, such as fundamental groups
+of manifolds, this approach seems to be quite successful. Indeed, this
+is one of the applications that we had in mind when planning this program.
+
+In Sections 2 and 3, respectively, we shall describe the isomorphism and
+nonisomorphism parts of the procedure, and in Section 4 we shall discuss
+some examples and results. As a general point, it is worth mentioning
+that, in order to ensure that the program produces the result as quickly as
+possible (where this is possible at all), it is essential to restrict the
+time that we spend on each individual calculation. All of the particular
+programs involved have optional time parameters, which force them to abort
+after a certain amount of time has passed (or, in some cases, a certain
+amount of data has been generated). If we abort a program for this reason,
+then we may have to rerun it later with a larger allowable time. The
+correct tuning of these time parameters is very important for efficiency.
+It is also important, when we are attempting to prove that two groups $G$ and
+$H$ are isomorphic, to look alternately for isomorphisms from  $G$  to  $H$
+and from $H$ to $G$ since, in some examples,
+one direction is considerably easier than the other.
+\section{Testing for isomorphism}
+
+In this section the program {\bf findisoms}, used to search for an explicit
+isomorphism between two groups, is described.
+
+\subsection{The basic algorithm.}
+Suppose that $G = \langle g_1, g_2, \ldots ,g_m | r_1, r_2, \ldots , r_s
+\rangle $ and $H = \langle h_1, h_2, \ldots , h_n |$ $s_1, s_2, \ldots , s_t
+\rangle $ are two finitely presented groups.
+In this section, whenever we refer to a word in the group generators
+$g_i$ (with $1 \leq i \leq m$),
+we shall mean a (possibly empty) string in the symbols $g_i$ and
+$g_i^{-1}$. For two such words, $w$ and $v$, we write $w=v$ only if they are
+equal as strings, but we shall say that they are equal in the group $G$ if
+they map onto the same element of $G$.
+
+Fundamental to the procedure that searches for an isomorphism
+from $G$ to $H$ is the fact that
+for each of the two groups we are able to construct, using the Knuth-Bendix
+procedure (see Section 2.5), a reduction machine $M$.
+To each such machine, there is an associated language $L_M$, which consists of
+a set of words in the group generators with the property that, for each group
+element $g$, there is at least one word in $L_M$ that maps onto $g$. For
+efficiency of the algorithm, it is preferable that as few words as
+possible in $L_M$ should map onto $g$. The machine $M$,
+given any word $w$ in the group generators, identifies a word $v$ in $L_M$,
+equal to $w$ as an element of the group, certainly no longer than $w$ as a
+word, and known as the {\em reduction } of $w$ by $M$. The words in $L_M$
+itself are called {\em reduced} and are left unchanged by $M$. Given such
+a machine, it is straightforward (using a depth-first search) to generate
+a list of all reduced words (i.e. all words in $L_M$) up to a given length.
+
+Ideally $L_M$ should be a set of shortest representatives of the
+elements of the group, with a unique representative per group element. This
+of course may not be possible (and will certainly not be for a group without
+soluble word problem), but in fact is not strictly necessary. This will be
+discussed further. For now, suppose that machines $M_G$ and $M_H$ exist.
+
+Now, given the machines $M_G$ and $M_H$ for $G$ and $H$ respectively,
+we proceed as follows.
+\begin{enumerate}
+\item 
+Construct a homomorphism $\theta$ from $G$ to $H$.\\
+Using the machine $M_H$ we systematically
+generate `all' sequences of reduced words
+$w_1, w_2, \ldots , w_m$ in the generators of $H$.
+We order such sequences
+according to the sum of the lengths of the
+words. We can then define a map $\theta$ from  the generators 
+of $G$ into $H$ by $g_i\theta = w_i$, and try and extend it by
+multiplication to give a homomorphism from $G$ to $H$.   
+Images of the relators $r_i$ of $G$ can be calculated as
+products of the $w_i$'s, and thus as words in the $h_i$.
+If they reduce using $M_H$
+to the trivial word, then $\theta$ has been shown to be a homomorphism, and
+we proceed.
+\item 
+The `onto' test.\\
+Given that $\theta$ is a homomorphism, we generate `all'
+reduced words (up to some fixed length) in the $g_i$
+given by the machine $M_G$ and map them, using $\theta$, into $H$, and then
+reduce them using  $M_H$. If in
+this way we find every generator $h_i$ of $H$ as an image of some word
+$u_i$, then $\theta$ has been shown to be surjective.
+\item
+Construct an inverse homomorphism $\hat{\theta}$.\\
+When the `onto' test shows $\theta$ to be surjective, we can define an
+inverse map $\hat{\theta}$ from the generators of $H$ into $G$ by 
+$h_i\hat{\theta} = u_i$. Images in $G$ of the relators $s_i$ of $H$ can be
+calculated as products of the $u_i$, and reduced using $M_G$. If these are
+all trivial, then $\hat{\theta}$ is a homomorphism from $H$ to $G$ and
+$\hat{\theta}\theta$ is the identity map. 
+\item 
+The `one to one' test.\\
+For each $i$, we apply $\hat{\theta}$ to the word $w_i$ and reduce
+using $M_G$. Provided we get $g_i$ every time, we know that
+$\theta\hat{\theta}$ is the identity, so that $\theta$ is one to one.
+In this case, $\theta$ is an isomorphism.
+\end{enumerate}
+Of course, if any of the above processes fails for a particular sequence
+$w_1, \ldots ,w_m$, then we stop and proceed immediately to the next
+sequence.
+This basic procedure is run repeatedly, for longer and longer time periods,
+and with the various controlling
+parameters increased each time.  An increasing amount of time is given each
+time for the construction of the machines  $M_G$ and $M_H$ (unless they are
+already known to be optimal), so that with
+time they generate words with less and less repetition of group elements,
+and reduce words more effectively.
+The maximum length of words given by $M_G$ allowed for the
+`onto' test also increases each time. 
+Because of the fact that, at any given time, the machines  $M_G$ and $M_H$
+may not reduce a given word to its shortest possible form,
+it is perfectly possible that an
+isomorphism may not be recognised as such the first time that it is
+encountered. The idea is that it must be recognised after some finite amount
+of time.
+
+The basic procedure is clearly intrinsically slow, and much needs to be done
+to speed it up.
+
+We try to get greater efficiency by building the maps $\theta$ up as partial
+maps, defined initially on only the first few generators, and rejecting them
+as maps which could extend to isomorphisms at as early a stage as possible.
+We currently use three tests to reject  a partial map $\theta$, defined on
+the first $l$ generators, $g_1, g_2, \ldots ,g_l $, all of which are
+described in detail below.
+\begin{enumerate}
+\item
+We compute the relators involving just the generators $g_1, g_2, \ldots
+,g_l$, and check to see if they reduce to the trivial word in $H$. 
+The generators have already been ordered using the program {\bf ordrels}
+to ensure that this test is as efficient as possible.
+\item
+The abelian quotient test.\\
+We check to see whether the partial map induced by $\theta$ on the torsion free
+parts of the  abelian
+quotients of $G$ and $H$ could extend to an isomorphism between the two
+abelian groups.
+\item
+The permutation group quotient test.\\
+For some finite permutation group $P$  that arises as a finite quotient of
+$G$ and $H$, we check to see whether the partial map induced by $\theta$
+between such finite quotients could extend to an isomorphism between the
+two permutation groups.
+\end{enumerate}
+Once a partial map is rejected we backtrack and move onto the next
+possibility. 
+
+\subsection{Ordering the generators of G with ordrels.}
+{\bf ordrels} eliminates any clearly redundant generators of $G$, and then
+reorders the remaining generators and relators of $G$ such that, in the
+resulting presentation
+$G = \langle g_1, g_2, \ldots , g_m | r_1, r_2, \ldots , r_s \rangle$,
+there are nonnegative integers $0 \leq a_1 \leq a_2 \leq ... \leq a_m = s$,
+with the property that the relators $r_1, \ldots , r_{a_i}$  involve only the
+generators $g_1, \ldots , g_i$,  for $i = 1,\ldots ,m$,  and the sequence
+$(a_1,a_2,\ldots ,a_m)$ is lexicographically as large as possible subject to
+this property. (In fact, if $m$ is larger than about 6, it becomes too
+time-consuming to consider all possible orderings of the $g_i$, and so we use
+a more heuristic procedure.)
+
+\subsection{Explanation of the abelian quotient test.}
+Any isomorphism between two groups should induce an isomorphism between
+their free abelian quotients. (By the free abelian quotient of a group $G$ we
+mean the quotient $G/G_T$ where $G_T/G'$ is the torsion subgroup of the abelian
+quotient $G/G'$. This is computed initially for the groups $G$ and $H$
+using the standard integer matrix diagonalization algorithm.)
+Thus, when the abelian quotient test is being used, a partial map 
+between $G$ and $H$ is
+rejected as a candidate for isomorphism if the partial map it 
+induces between the
+free abelian quotients of $G$ and $H$ cannot be extended to an isomorphism. 
+The test proceeds as follows.
+
+Let $\overline{g_1}, \overline{g_2},
+\overline{g_3},\ldots, \overline{g_m}$ and 
+$\overline{h_1}, \overline{h_2}, \overline{h_3},\ldots, \overline{h_n}$ be the
+ images of the $g_i$'s and $h_i$'s in
+the free abelian quotients of $G$ and $H$ respectively. 
+Then, if $w_1$, $w_2$, $w_3$, $\ldots$, $w_l$ are
+the images in $H$ of the generators $g_1, g_2, g_3,\ldots ,g_l$
+under a partial mapping $\theta$ from $G$ to $H$, the images 
+ $\overline{w_1}, \overline{w_2}, \overline{w_3}, \ldots,  \overline{w_l}$ of 
+$\overline{g_1}, \overline{g_2}, \overline{g_3},\ldots, \overline{g_l}$
+ are simply the abelianized versions of these words (i.e. if
+$w_i = h_{r_1}^{s_1}h_{r_2}^{s_2}h_{r_3}^{s_3}\ldots h_{r_k}^{s_k}$,
+ $\overline{w_i} = s_1\overline{h_{r_1}} + s_2\overline{h_{r_2}}
+ + \ldots  s_k\overline{h_{r_k}})$. 
+The $\overline{w_i}$'s are then possible
+isomorphic images of the $\overline{g_i}$'s provided that,
+for some choice of generators for the two free abelian groups, the matrices of 
+coordinates of $\overline{w_1}, \overline{w_2},\overline{w_3},
+\ldots, \overline{w_l}$ 
+and $\overline{g_1},\overline{g_2},\overline{g_3},\ldots, \overline{g_l}$ 
+with respect to these generating sets are the same. 
+The following lemma
+specifies a lower triangular canonical form for the
+matrix of coefficients of a set of words in an abelian group in terms of a
+minimal generating set. 
+\begin{lemma}
+For any set of words $a_1, a_2, a_3,\ldots, a_s$ in a free abelian group A, 
+there is a unique set $f_1, f_2, f_3, \ldots, f_t$ of elements 
+of $A$ with the property that it is part of a set of free generators for
+$A$ and, for $1 \leq k \leq s$,\\
+(1) if $rk \langle a_1,a_2,\ldots, a_k \rangle = i_k$, 
+then $\langle a_1,a_2,a_3\ldots, a_k \rangle
+\subseteq \langle f_1,f_2,\ldots, f_{i_k} \rangle$,\\
+(2) if $i_k =  rk \langle a_1,a_2,\ldots, a_k \rangle >
+ rk \langle a_1,a_2,\ldots, a_{k-1} \rangle$, then
+$a_k = x_{k,1}f_1 + x_{k,2}f_2 + x_{k,3}f_3 + \ldots + x_{k,i_k}f_{i_k}$,
+ where  $x_{k,i_k}>0$ and,
+for all $j < i_k, 0 \leq x_{k,j} < x_{k,i_k}$.\\
+\end{lemma}
+\begin{proof}
+If $a \in A$, then there is a unique positive integer $n$ and a unique element
+$f$ of $A$ such that $a = nf$, and $f$ is part of a free generating set for $A$.
+We'll
+call $n$ the {\em index} of $a$, and $f$ the {\em root} of $a$.
+Now, where $A_k$ is used to denote the subgroup
+$\langle a_1,a_2,a_3,\ldots, a_k \rangle$ of rank $i_k$, and $F_{i_k}$ 
+the subgroup $\langle f_1,\ldots, f_{i_k} \rangle$ of $A$, we 
+simply define $f_1$ to be the root
+of $a_1$, and  more generally, where $i_k>i_{k-1}$, $F_{i_{k-1}} + f_k$ to be 
+the root of $F_{i_{k-1}} + a_k$ in $A/F_{i_{k-1}}$. 
+Then $x_{k,i_k}$ is the index of $F_{i_{k-1}} + a_k$, and $f_k$
+is uniquely specified within the coset
+$F_{i_{k-1}} + f_k$ by condition (2).
+\end{proof}
+
+Thus we 
+simply have to calculate and compare the canonical forms for the matrices of
+ coefficients of the sets ${\overline{g_1},\overline{g_2},\ldots, 
+\overline{g_l}}$ and ${\overline{w_1},\overline{w_2},\ldots, \overline{w_l}}$.
+If these do not match, then $\theta$ is rejected.
+
+\subsection{The permutation group quotient test}
+For the permutation group quotient test we use information we have collected
+during the non-isomorphism part of the program (see Section 3). We identify
+a finite permutation group $P$, which can be found as a finite quotient of
+both $G$ and $H$, chosen to be as large as possible subject to the
+constraint that the number $k$ of 
+inequivalent epimorphisms from each of $G$ and $H$ onto $P$ should not be
+too big. (The epimorphisms are calculated using the program {\bf permim},
+described in Section 3. Two epimorphisms are said to be equivalent
+if one is equal to the other followed by an inner automorphism of $P$.)
+Let $\phi _1, \phi _2, \ldots, \phi _k$, and $
+\psi _1, \psi _2, \ldots , \psi _k$ be a complete set of inequivalent
+epimorphisms from $G$ and $H$,
+repectively, onto $P$.
+If $\theta$ is an
+isomorphism from $G$ to $H$ then, for some $i$, $\phi _i$ must be equivalent to
+$\theta \psi _1$. Therefore, if $\theta$ is a partial map 
+mapping  $g_1, g_2, g_3,\ldots ,g_l$
+to $w_1, w_2,w_3,\ldots ,w_l$ that extends to an isomorphism from $G$ to $H$
+then, for some $i$ with $1 \leq i \leq k$, the cycle-types of $(g_j)\phi _i$
+and $w_j \psi _1$ must be the same for all  $1 \leq j \leq l$.
+Thus we calculate the cycle types of the images of the generators $g_1, g_2,
+\ldots , g_l$ under $\phi _1, \phi _2, \ldots , \phi _k$, and also of the
+words $w_1, w_2, \ldots ,w_l$ under $\psi_1$.
+If there is not at least one $\phi _i$ so that the cycle types of
+$g_1 \phi _i, g_2 \phi _i, \ldots,  g_l \phi_i $ are the same as those of
+$w_1 \psi_1, w_2 \psi_1, \ldots, w_l \psi_1 $, then $\theta$ is rejected.
+
+\subsection{The reduction machines.}
+Let $G = \langle g_1, g_2, \ldots , g_m | r_1, r_2, \ldots , r_s \rangle$ 
+be a finitely presented group. We define a total order $\succ$ on the words 
+in the
+generators $g_1, g_2, \ldots , g_m$ and their inverses as follows.
+If $w  = g_{i_1}^{\alpha _1}g_{i_2}^{\alpha _2} \dots g_{i_k}^{\alpha_k}$ and
+$v = g_{j_1}^{\beta _1}g_{j_2}^{\beta _2} \ldots g_{j_l}^{\beta _l}$ ,
+with $\alpha _i , \beta _j \in \{ \pm 1 \}$,
+then $w  \succ v $ 
+if either $k>l$
+or $k=l$ and, for some $h$,
+$i_1 = j_1$ and $\alpha _1 = \beta _1, i_2 = j_2$ and $\alpha _2 = \beta _2, \ldots
+ i_{h-1} = j_{h-1}$ and $\alpha _{h-1} = \beta _{h-1}$, 
+and  either $i_h = j_h$ and $\alpha _h = -1, \beta _h = 1$ or $i_h > j_h$.
+This is the common `shortest, lex-least' ordering.
+
+Suppose that $R = \{ (u_1,v_1), (u_2,v_2), \ldots , (u_k,v_k) \}$ is a set of
+pairs of words in the generators of $G$ such that, for each $i$, 
+$u_i \succ v_i$ and $u_i$ and $v_i$ map onto the same element of $G$.
+Then $R$ is called a set of {\em rewrite rules} for $G$,
+and the pairs $(u_i,v_i)$ are known as {\em rules}.
+
+We define a {\em reduction machine} $M(G,R)$ for $G$ with respect to $R$ to be a
+finite, directed, edge-labelled, graph, 
+with the following properties.
+\begin{enumerate} 
+\item
+One vertex of the graph is identified as the {\em start} vertex, and
+some of the remaining vertices are identified as {\em rewrite} vertices.
+There is a given one-one correspondence between the rewrite vertices and the
+rules in $R$.
+\item 
+From each vertex which is {\em not} a rewrite vertex, there is one
+outgoing edge labelled with each generator $g_i$ and one with each $g_i^{-1}$.
+\item
+A word in the $g_i$ can be completely traced out from the start vertex to a
+non-rewrite
+vertex if and only if it contains none of the $u_i$'s as a subword. Such a
+word is called {\em reduced}. (The set of reduced words is also called the
+{\em language} $L_M$ of the machine $M = M(G,R)$.)
+\item
+If a word $w$ in the $g_i$ is not reduced, then there is a rule $(u_i,v_i)$
+in $R$ and words $x$ and $y$ such that $w=xu_iy$, every proper prefix of
+$xu_i$ is reduced, and the path along $w$ from the start vertex terminates
+after the prefix $xu_i$ at the rewrite vertex corresponding to $(u_i,v_i)$.
+\end{enumerate}
+
+Given any word $w$ in the $g_i$ that is not reduced already,
+the machine $M(G,R)$ can be used to find a reduced word $v$ that is equal in
+$G$ to $w$, with $w \succ v$. The algorithm
+is quite simple. The word $w$ is traced out as far as is possible.
+If $w$ = $zy$,
+where $z$ leads to the rewrite vertex with rule $(u_i,v_i)$,
+then $z = xu_i$, and $w$ is equal in $G$
+to $xv_iy$. Clearly $w \succ xv_iy$. 
+The procedure is repeated using $xv_iy$ instead
+of $w$, until finally $v$ is obtained which traces out to a non-rewrite
+vertex. This procedure must terminate, because there are only finitely many
+words $v$ with $v\prec w$.
+
+It is also straightforward to generate, in order, the reduced words of the
+machine, as those words that can be traced out without hitting a rewrite
+vertex.
+
+The accuracy of the machine $M(G,R)$ depends on the set $R$.
+An initial set $R_0$ can be obtained from the relators of $G$. Any relator
+$r_i$ is equivalent to an equation $u_i = v_i$, where $r_i = u_i^{-1}v_i$
+and $u_i \succ v_i$. $R_0$ is defined to be the set of such pairs 
+$(u_i,v_i)$, corresponding to the relators of $G$, together with all 
+pairs $(g_ig_i^{-1},\varepsilon )$ and $(g_i^{-1}g_i,\varepsilon )$, where
+$\varepsilon$ is the empty word. A sequence of sets of rewrite
+rules $R_0, R_1, R_2, \ldots $ is then obtained using the Knuth-Bendix
+procedure. The basic idea of this is that $R_{n+1}$ is obtained from $R_n$ 
+by looking, in $R_n$, for two rules $(u_i,v_i)$ and $(u_j,v_j)$, 
+where $u_i = xy$, and $u_j = yz$ with $y$ nonempty. Then $xyz$ is
+equal in $G$ to both $v_iz$ and $xv_j$, and so $v_iz$ and $xv_j$ are
+equal in $G$.
+Both $v_iz$ and $xv_j$ are then reduced
+as far as possible using the existing rules in  $R_n$, and by cancelling common
+prefixes and suffixes. This results ultimately in two reduced words
+$a$ and $b$ that are equal in $G$.
+If either $a$ or $b$ is
+non-trivial, then $(a,b)$ (if $a \succ b$) or $(b,a)$ (if $b \succ a$ ) is
+a new rule, which is adjoined to $R_n$ to give $R_{n+1}$ (and existing
+rules are modified, if necessary, using the new rule). If no
+such pair of rules $(u_i,v_i)$ and $(u_j,v_j)$ results in a new rule,
+then the process terminates with the finite set $R_n$.
+The procedure is described in more detail in [Gil, 1979].
+
+The following property of the Knuth-Bendix procedure can be proved.
+Let $u$ be any word, and let $v$ be the
+the minimal word with respect to $\succ$ that is equal to $u$
+in $G$. Then
+there is some integer $n$ so that the reduction from $u$ to $v$ may be deduced
+only from the rewrite rules in $R_n$. Thus the machines built from
+successive $R_n$'s give increasingly accurate reduction.
+If the Knuth-Bendix procedure actually terminates in a finite set $R_n$, then
+the corresponding reduction machine
+gives accurate reduction to the minimal representatives
+with respect to $\succ$. This will happen eventually for a finite group $G$,
+and it occasionally happens for infinite groups, but we cannot rely on it
+in general.
+
+It should be observed that, where reduction is needed in {\bf findisoms},
+it is always used to verify whether or not a word reduces to either the
+trivial word or a single generator. The rules necessary simply to check
+reductions of this type for all words up to a given length are 
+often relatively quickly obtained.
+
+Examples of reduction machines are given in Fig.1 and Fig.2, for the free 
+abelian group on two generators, with presentation $\langle a , b | [a,b]
+\rangle$. (We have written $A$ in place of $a^{-1}$ and $B$ in place of
+$b^{-1}$. The machine shown in Fig. 1,
+built from the initial set of reduction rules $R_0 =
+\{ (ba,ab), (aA,\varepsilon )$, $(Aa,\varepsilon )$,
+$(bB,\varepsilon)$,
+$(Bb,\varepsilon ) \}$ does not give complete reduction with respect to
+$\succ$
+(notice that the word $bA$ does not reduce). However the Knuth Bendix
+procedure very rapidly terminates to give a finite set of 8 rules. The  
+machine in Fig. 2, built from this complete set of rules, therefore
+gives complete reduction.\\
+\vspace{150 mm}
+\section{Testing for nonisomorphism}
+
+We attempt to prove that two finitely presented groups are not isomorphic,
+by systematically looking for their finite quotients of small finite
+order (up to a few thousand).  If these are not the same for the two groups,
+then they cannot be isomorphic. This approach to the problem was also used
+by Havas and Kov\'{a}cs in [HaK, 1984] to distinguish between various knot
+groups.
+
+Let  $G$  be a fixed finitely presented group.
+The first program that we use, {\bf permim}, finds the epimorphisms of  $G$ 
+onto a fixed finite permutation group  $P$. More precisely, it finds a
+representative of each equivalence class of epimorphisms, where two are said
+to be equivalent if one is equal to the other followed by an inner
+automorphism of  $P$.  This, and the other programs mentioned here, will be
+described in greater detail below.  Let  $K$  be the kernel of an epimorphism
+of  $G$  onto  $P$.  When  $P$  is not too big, we can compute the abelian
+quotient invariants of  $K/K'$, using standard algorithms. Furthermore, our
+program for this purpose {\bf subabquot}, can work modulo a given prime  $p$,
+and compute the largest elementary abelian  $p$-factor group  $K/K^{(p)}$  of 
+$K$, where $K^{(p)} = \langle K'K^p \rangle$. If $G/K^{(p)}$ is not too large
+(of order up to about 50,000, as a guideline), then we can compute $G/K^{(p)}$ explicitly
+as a regular permutation representation, and then repeat the process with 
+$G/K^{(p)}$ in place of $G/K = P$. (A regular permutation representation of a
+group is a transitive representation in which no non-identity element
+fixes any point.) In this way, we can build up finite quotient
+groups of $G$ that are extensions of soluble groups by $P$.  Finally, we have a
+simple program {\bf orders},  which computes the numbers of elements of each
+possible order in a regular permutation group.  This enables us to distinguish
+between quotient groups (such as the dihedral and quaternion groups of order 8),
+which would otherwise look alike. In our current implementation, we try
+{\bf permim} on all finite nonabelian simple groups of order up to about 10,000
+(although this could easily be increased) together with some almost simple
+groups like automorphism groups and covering groups of simple groups,
+and a few small examples like $S_4$, which have proved useful in
+particular examples. We only
+attempt the extension process using {\bf subabquot} when $P$ is either
+trivial or one of a few small examples, such as
+$S_4$, $A_5$, $S_5$, $PSL(2,7)$, 
+$PGL(2,7)$ or $A_6$.  In these cases, we have to work with the regular
+permutation representation of $P$. In all other cases, we simply count the
+number of equivalence classes of epimorphisms from $G$ and $H$ to $P$,
+and compare the two answers.
+
+In order to assist the comparison between the finite quotients of
+the two given groups, we store the information about extensions of soluble
+groups by $P$ in a graph-like structure. The top vertex of this graph is
+labelled $G/K  (= P)$, and a general vertex is labelled $G/L$,  where $L$ is
+a characteristic subgroup of $K$. Together with a vertex, we may store the
+numbers of elements of each order of $G/L$,  and the abelian quotient
+invariants of $L/L'$. For a given prime $p$, we may define a directed edge
+from the vertex with label $G/L$ to  that with label $G/L^{(p)}$. This edge
+is labelled with the order $p^n$ of $L/L^{(p)}$  with $n \geq 0$. Any one of the
+above items of information may not be present, either because we have not
+tried to calculate it yet or because we have attempted to calculate it and
+failed as a result of integer overflow or lack of space. In the former case,
+we may attempt to compute it later.  If $G$ has several inequivalent
+epimorphisms onto $P$, then we get one such graph for each of these, and so,
+when we are comparing two groups for nonisomorphism, we have to check if there
+is a pairwise correspondence between their graphs.
+
+We turn now to a more detailed description of the individual programs
+involved. {\bf permim} is also described in Section 7.1 of [HoP, 1989].
+Roughly speaking, we use a backtrack search to test possible images of
+the generators of $G$ in $P$ as candidates for epimorphisms from $G$ to $P$.
+We need representatives  $c_i$ of the conjugacy classes $Cl_i$ of $P$,
+together with their centralizers  $C_i = C_P(c_i)$ in $P$. In our
+implementation, $P$ must be one of a fixed list of groups (including suitable
+permutation representations of all nonabelian simple groups of order up to a
+million, together with some almost simple groups and some small groups
+such as $S_4$), for which we have computed
+and stored this information in advance  (together with a base and strong
+generating set  for $P$,  to facilitate computation within $P$ -
+see, for example, [Sims, 1971]).
+The first step is to run the preliminary filter {\bf ordrels} on the 
+presentation
+of $G$, which is also used prior to running the {\bf findisoms} program
+described in Section 2.
+{\bf ordrels} eliminates any clearly redundant generators of $G$, and then
+reorders the remaining generators and relators of $G$ such that, in the
+resulting presentation
+$G = \langle g_1, g_2, ..., g_m | r_1, r_2, ..., r_s \rangle$,
+there are nonnegative integers $0 \leq a_1 \leq a_2 \leq ... \leq a_m = s$,
+with the property that the relators $r_1, \ldots , r_{a_i}$  involve only the
+generators $g_1, \ldots , g_i$,  for $i = 1,\ldots ,m$,  and the sequence
+$(a_1,a_2,\ldots ,a_m)$ is lexicographically as large as possible subject to
+this property. The idea of this is that, when we are testing a partial
+set of images  $\phi(g_1), \phi(g_2), \ldots , \phi(g_i)$ in $P$ as a candidate
+for completion to a homomorphism from $G$ to $P$, we can attempt to rule out
+this partial set immediately by checking to see if the relators
+$r_1, \ldots , r_{a_i}$ are satisfied by these images. This helps to prune down
+the backtrack search for epimorphisms. Since we are looking for representatives
+of equivalence classes of epimorphisms, it is clear that we can restrict
+our candidates for $\phi(g_1)$ to the representatives $c_i$ of the conjugacy
+classes in $P$. For a given $\phi(g_1) = c_i$, we compute the orbits of the
+centralizer  $C_i$ of $c_i$ acting by conjugation on $P$. Then we can restrict
+our candidates for $\phi(g_2)$ to representatives of these orbits. If $m > 2$,
+then we compute the  $C_P(\langle\phi(g_1),\phi(g_2)\rangle)$ and the orbits
+of this group acting by conjugation on $P$.  Representatives of these orbits
+are our candidates for  $\phi(g_3)$, and so on.  Unfortunately, these
+centralizers are likely to rapidly become very small or trivial, in which case
+we shall essentially be searching through the whole group for images of the
+generators.  This restricts the size of  $P$ to which the algorithm is
+applicable, and the maximum feasible size diminishes rapidly as the number  $n$ 
+of generators increases, unless the numbers $a_i$ are favourably large.
+However, searching through all elements of $P$ is a very efficient process
+using a base and strong generating set, and testing whether relators hold is
+also fast, since we normally only need to look at the images of a few points
+in the set being permuted by $P$.
+
+We turn now to the program {\bf subabquot}.  Let $P$ be a permutation group on
+the finite set $\Omega = \{1,2, \ldots , t\}$,  and let
+$\phi: G \longrightarrow P$ be an
+epimorphism, where
+$G = \langle g_1, g_2, \ldots , g_m | r_1, r_2, \ldots , r_s \rangle$
+is as above.  We shall regard the generators $g_i$ as acting on $\Omega$
+via $\phi$. Since only the orbit of  1  under $P$ is involved, we may as well
+assume that $P$ is transitive on $\Omega$. Let $Q = G_1$ be the stabilizer of
+the point  1  in $P$,  and let $H = \phi^{-1}(Q)$.  We shall give a brief
+description of the standard Reidemeister-Schreier algorithm to obtain a
+presentation of $H$. An original implementation of this by Havas is described
+in [Hav, 1974]. See also Section 4 of [Neu, 1982] for a discussion of
+related algorithms and implementations.
+For each $i$ in $\Omega - \{1\}$,  we can
+regard one particular equation $j^{g_k} = i$ as being the definition of  $i$,
+where $j$ is already defined,  and  1  is regarded as being defined initially.
+This associates an element $g(i)$ of $G$  to each point
+$i$ in $\Omega$, with the property that $1^{g(i)}=i$, where $g(1)=1$ and
+$g(i)=g(j)g_k$ with $j^{g_k}=i$ a definition.
+To each equation  $j^{g_k} = i$ that is not a definition,
+we can define an element $h(j,k)$ of $H$ by $g(j)g_k = h(j,k)g(i)$. The $h(j,k)$
+then generate $H$ (they form the set of Schreier generators).
+We obtain the relators for $H$  as follows. For each relator $r_k$ of $G$ and
+each point $i$ in $\Omega$, we can use the equations $g(j)g_k = h(j,k)g(i)$
+to obtain an equation $g(i)r_k = w(i,k)g(i)$,  where $w(i,k)$ is a word in
+the $h(j,k)$.  Then the $w(i,k)$ form a set of defining relators for $H$
+with respect to the Schreier generators. Having obtained a presentation of
+$H$ in this way, we can compute the abelian quotient invariants of $H$ by
+the standard integer diagonalization algorithm, although it is important to
+check for integer overflow, since this becomes a serious danger when the
+index of $H$ in $G$ grows beyond a few hundred. (In [HaS, 1979], an
+implementation is described that attempts to overcome this problem.)
+Alternatively, we can work
+modulo a fixed prime $p$ to obtain the largest elementary abelian $p$-factor
+group $H/H^{(p)}$ of $H$. The problem of integer overflow no longer occurs,
+and so this is applicable to subgroups of much larger index.
+
+In the applications to nonisorphism testing, we only make use of the case in
+which $P$  acts regularly on $\Omega$; i.e. $Q = 1$, so let us assume that this
+is the case. Then $H$ is equal to the kernel of $\phi$.  Let  $\psi $ be the
+epimorphism from  $H $ to  $H/H^{(p)}$.  Then the elements of $G/H^{(p)}$ have
+the form  $\overline {h}g(j)$,  for $\overline{h}$ in $H/H^{(p)}$ and
+$j = 1,2, \ldots ,t$, where
+$\overline{h}g(j)g_k = \overline{h} \psi(h(j,k))g(i)$,
+and this enables us to construct the
+epimorphism from $G$ to the regular permutation representation of $G/H^{(p)}$.
+
+Finally, the program {\bf orders}, which is only written to work on regular
+permutation groups, is straightforward. For each $i$ in $\Omega$, it
+constructs the unique permutation in $P$ that takes  1  to $i$,  and computes
+the length of the orbit of  1  in this permutation, to give its order.
+\section{Results}
+
+Our programs can be used in various ways. The simplest approach is simply to
+provide two group presentations, and then run the general {\bf testisom}
+program that attempts to decide if the groups are isomorphic or not. Either
+this program will run forever (or run out of space), or it will finish by
+providing an explicit isomorphism (with inverse maps) between the two groups,
+or show that the groups are not isomorphic by describing a way in which
+their finite quotient structures differ. This approach is particularly suitable
+if one has a large collection of pairs of groups for testing, since it can
+then be left to run for a long period, but it should probably be prevented
+from running for too long on any single example. For example,
+in [Kel, 1990], a collection of about 30 pairs of link groups is considered,
+each pair of which came from identical links with different
+orientations. All of these are groups with four generators and up to
+four relations.
+This is not the easiest situation for the isomorphism searching program,
+since all of the relations involve all four generators, which means that the
+relations can only be checked when all four images are known. However, in
+all cases but two, the program was successful very rapidly. Of the two
+remaining cases, one pair turned out to be isomorphic and the other not.
+The isomorphic pair was
+\begin{eqnarray*}
+G  =  \langle \, a,b,c,d \, | &  (cAbA)^2(cDcA)^2, (cAbA)^2bAcDcAcDcB, \\
+ & (cAbA)^2(cAcD)^2, (cAbA)^2dAcDcAcDcD \, \rangle
+\end{eqnarray*}
+and
+\begin{eqnarray*}
+H = \langle \, a,b,c,d \, | & cA(cAbAcD)^2cA, cAcAbAbAcDcAbAcDcB, \\
+  & (cA)^3bAcDcAbAcD, cAcAdAbAcDcAbAcDcD \, \rangle.
+\end{eqnarray*}
+(Here, and elsewhere in this section, we have used  $A$  for  $a^{-1}$, etc.)
+{\bf testisom} eventually found the isomorphism
+\begin{displaymath}
+a \rightarrow a, b \rightarrow cDc,
+c \rightarrow b, d \rightarrow bCb,
+\end{displaymath}
+after running for about three hours on a Sun 3/60.
+The nonisomorphic pair was
+\begin{eqnarray*}
+G  =  \langle \,  a,b,c,d \,  |  & c^2a^2c^2aC^2A^2C^2A, 
+c^2a^2c^2A^6ba^6C^2A^2C^2B, \\
+ & a^2c^2a^2cA^2C^2A^2C,  c^2a^2c^2a^2C^8dc^8A^2C^2A^2C^2D \,  \rangle
+\end{eqnarray*}
+and
+\begin{eqnarray*}
+H = \langle \, a,b,c,d \, | & c^2A^2c^2aC^2a^2C^2A,
+c^2A^2c^2A^2ba^2C^2a^2C^2B, \\
+ & A^2c^2A^2ca^2C^2a^2C, c^2A^2c^2A^2da^2C^2a^2C^2D \, \rangle.
+\end{eqnarray*}
+These two groups turned out to have the same soluble quotients of elementary
+abelian length 2, and the general tree construction for building soluble
+quotients described in Section 3 could not get to length 3, since these
+quotients were too large. However, we eventually found that $G$ and $H$
+had respectively 5616 and 6048 equivalence classes of epimorphisms onto the
+symmetric group $S_4$, which of course proves their nonisomorphism.
+Another suitable sequence of examples were certain fundamental groups of
+one-cusp manifolds provided by Jeff Weeks. These have the presentations
+\begin{displaymath}
+\langle \, t,x \, | \, t^lxT^lxt^lXT^{l+m}X \, \rangle
+\end{displaymath}
+for various values of $l$ and $m$. Certain pairs of these, such as
+$(l,m) = (r,s)$ and $(-r-[s/2],s)$ where  $4|s$  and  $(r,s)=1$  could not be
+distinguished easily by geometrical invariants. All examples that we
+tried were readily shown to be nonisomorphic, since their soluble
+quotients of elementary abelian length 2 were distinct.
+
+It is also possible to instruct the {\bf testisom} program to attempt to prove
+either isomorphism only, or nonisomorphism only. This generally makes
+everything run at least twice as fast, if one's suspicion turns out to be
+right. For example, for the first example described above, when searching
+for isomorphisms only, {\bf testisom} took just over an hour. (This was using
+the abelian quotient test, described in Section 2.3. Without this test, it
+took nearly 12 hours.)
+
+When attempting to prove isomorphism between two groups  $G$  and  $H$,
+it is important to alternate the attempts to construct the isomorphism from
+$G$ to $H$  and  from  $H$  to  $G$, since it may turn out to be
+much easier in one direction than the other. A spectacular example of
+this phenomenon is provided by the two presentations of Listing's Knot Group
+given by
+$G = \langle a,b,c,d,e | cEaB, DaE, aDcB, EcD \rangle$
+and
+$H = \langle u,v | u^3vUV^2Uv \rangle$.
+The program took just under three hours on a Sun 3/60 to find the isomorphism
+\begin{displaymath}
+a \rightarrow uv^2u, b \rightarrow vu^2vu^2v,
+c \rightarrow vu^2v, d \rightarrow uv, e \rightarrow vu.
+\end{displaymath}
+from $G$ to $H$,
+but only a few seconds to find the isomorphism
+\begin{displaymath}
+u \rightarrow aC,  v \rightarrow AbA
+\end{displaymath}
+from  $H$  to  $G$.
+
+This example is also useful for measuring the effect of the abelian quotient
+test and the 
+permutation group quotient test described in Sections 2.3 and 2.4.
+When searching for isomorphisms only, the time taken to
+find the isomorphism from $G$ to $H$ using both of these tests,
+with the permutation group $S_5$ was about 10,400 seconds.
+With the abelian quotient test alone it was about 15,800 seconds,
+and with neither it had still not completed after more than 60 hours!
+(The largest abelian factor group of $G$ and $H$ is infinite cyclic.)
+In many examples, the effect of the abelian quotient test seems to be
+dramatic, whereas the permutation group test is helpful, but perhaps less
+so than we had hoped.
+
+For difficult cases of nonisomorphism, the experienced user can abandon the
+general program, and investigate the finite quotients in greater detail,
+using the individual programs. This enables the user to concentrate on the
+particular quotients that seem to be relevant, which will not necessarily be
+covered by the general program. For example, J.J. Seidel asked if the group
+\begin{eqnarray*}
+G = \langle \, a,b,c,d,e,f \, | & a^3, b^3, c^3, d^3, e^3, f^3, \\
+ & (ac)^2, (ad)^2, (ae)^2, (bd)^2, (be)^2, (bf)^2, (ce)^2, (cf)^2, \\
+ & (df)^2, (aB)^2, (aF)^2, (bC)^2, (cD)^2, (dE)^2, (eF)^2 \, \rangle
+\end{eqnarray*}
+was isomorphic to a certain space group $H$ defined as follows.
+Let $W$ be the derived group of the Weyl group $W(D_5)$. (Then $W$ is an
+extension of an elementary abelian group of
+order $2^4$ by $A_5$). Let $H$ be the semi-direct
+product of two copies of the 5-dimensional integral root lattice for $W$
+by $W$.  We found that both
+of these groups had epimorphisms $\phi$  onto  $A_5$,  and that, in both cases,
+the kernel of $\phi$ had an elementary abelian quotient of order $2^{12}$. The
+general program could not go beyond this. However, by introducing the new
+target group  $P$, isomorphic to $W$, we found that both $G$ and $H$ have 14
+equivalence classes of epimorphisms $\psi$ onto  $P$,  but the elementary
+abelian quotients of the kernels of the maps $\psi$  do not correspond. $G$
+cannot therefore be isomorphic to  $H$.
+
+For another difficult example, let  $V$  be the natural 3-dimensional module
+over the field of 2 elements for the group $PSL(3,2)$, and let $W$ be its dual.
+Then define $G$ and $H$ to be the semidirect products of $V \oplus V$ and
+$V \oplus W$  by  $PSL(3,2)$, respectively.
+Then $G$ and $H$ are nonisomorphic
+groups (of order 10,752), but none of our current techniques serve to
+distinguish between them, since they are both extensions of elementary
+abelian groups of order $2^6$ by $PSL(3,2)$, and they contain the same
+numbers of elements of each order. As in the previous example, we can
+distinguish between these groups by finding a suitable new target group $P$.
+(The best is the semidirect product of  $V$  with  $PSL(3,2)$.)
+In order to be able to cope with this kind of phenomenon more systematically
+in future, we plan to extend our programs so that they can investigate the
+submodule structure of reasonably small modules extended by groups.
+
+As a final example, let $G$ be the Fibonacci group
+\begin{eqnarray*}
+F(2,7)  =  \langle \, a,b,c,d,e,f,g \, | &  ab=c, bc=d, cd=e, de=f, \\
+ & ef=g, fg=a, ga=b \, \rangle
+\end{eqnarray*}
+and $H$ a cyclic group of order 29. This is a well-known difficult example.
+For a recent survey of results on Fibonacci groups, see [Tho, 1991].
+Although we did not really undertake
+this project with pathological examples like this in mind, we tried
+{\bf testisom} on this, and it took about ten hours to prove that the
+groups were isomorphic. This is an example in which the Knuth-Bendix process
+needs to be run for a long time in order to generate the correct
+reduction machine $M_G$, but of course {\bf testisom} does not know this.
+\section{References}
+
+[HaK, 1984] G. Havas and L.G. Kov\'{a}cs, `Distinguishing eleven crossing
+knots', in: M. Atkinson (ed.), {\em Computational Group Theory},
+Academic Press, London (1984), 367-373.\newline
+\newline
+[Hav, 1974] G. Havas, `A Reidemeister-Schreier program', in: 
+M.F. Newman (ed.) {\em Proceedings of the
+Second International Conference on the Theory of Groups, Canberra 1973},
+Lecture Notes in Mathematics, vol. 372,
+Springer, Berlin (1974), 347-356.\newline
+\newline
+[HaS, 1979] G. Havas and L. Sterling, `Integer matrices and abelian groups',
+in: E.W. Ng (ed.), {\em Symbolic and Algebraic Computation}, Lecture Notes
+in Computer Science, vol. 72, Springer, Berlin (1979), 431-451.\newline
+\newline
+[HoP, 1989] D. Holt and W. Plesken, ``Perfect Groups'', Oxford University Press
+(1989).\newline
+\newline
+[Gil, 1979] R.H. Gilman, `Presentations of groups and monoids', J. Alg. 57
+(1979), 544-554.\newline
+\newline
+[Kel, 1990] A.J. Kelly, `Groups from link diagrams',
+Ph.D. Thesis, University of Warwick (1990).\newline
+\newline
+[Neu, 1982] J. Neub\"{u}ser, `An elementary introduction to coset table
+methods in computational group theory', in: C. Campbell and E. Robertson (eds.)
+{\em Groups - St Andrews 1981}, LMS Lecture Note Series 71, CUP (1982),
+1-45.\newline
+\newline
+[Sims, 1971] C.C. Sims, `Computing with permutation groups', in:
+S.R. Petrick (ed.), {\em SYMSAM '71
+Proc. 2nd Symposium on Symbolic and Algebraic Manipulation, Los Angeles,
+1971}, ACM, New York (1971), 23-28.\newline
+\newline
+[Tho, 1991] R.M. Thomas, `The Fibonacci groups revisited',
+in: C. Campbell and E. Robertson (eds.)
+{\em Groups St Andrews 1989 Volume 2}, LMS Lecture Note Series 160,
+CUP (1991), 445-454.\newline
+\newline
+\newline
+\newline
+Addresses:\\[5mm]
+Mathematics Institute\\
+University of Warwick\\
+Coventry CV4 7AL \\
+Great Britain\\[5mm]
+Department of Mathematics and Statistics\\
+Merz Court\\
+The University\\
+Newcastle-upon-Tyne NE1 7RU\\
+Great Britain\\[5mm]
+\end{document}
+

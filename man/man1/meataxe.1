@@ -1,0 +1,27 @@
+.\" meataxe isom.d/man/man1 file meataxe.1
+.\" @(#)date.1v 1.11 88/02/25 SMI;
+.TH meataxe 1 "31 August 1992" "Geometry Group" "Geometry Group's manual"
+.SH NAME
+meataxe \- programs for finding the submodules of a 2-generator
+matrix group over a finite field.
+.SH DESCRIPTION
+.B meataxe
+is not a single program, but a sequence of programs written in Aachen
+for finding the complete submodule lattice of the module defined by a
+2-generator matrix group over a small finite field of prime order.
+The source files and some documentation are contained in the directory
+named `meataxe'.
+The individual programs are called by
+.B quotpic(1) in the function `submodules()' in the source file
+quotpic.c. The program
+.B mat2ma(1)
+is a filter for transforming data from Geometry group format to
+Meataxe format.
+.SH SEE ALSO
+.B quotpic(1)
+.br
+.B mat2ma(1)
+.br
+.B submodules(1)
+.SH ACKNOWLEDGEMENT
+The Meataxe programs were written by K. Lux, J. Mueller and M. Ringe.

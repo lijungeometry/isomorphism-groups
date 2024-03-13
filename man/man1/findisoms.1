@@ -1,0 +1,298 @@
+.\" findisoms isom.d/man/man1 file findisoms.1
+.\" @(#)date.1v 1.11 88/02/25 SMI;
+.TH findisoms 1 "27 January 1994" "Geometry Group" "Geometry Group's manual"
+.SH NAME
+findisoms \- find homomorphisms from one finitely presented group to another
+.SH SYNOPSIS
+.B findisoms
+[
+.B \-a
+]
+[
+.B \-c
+]
+[
+.B \-e
+]
+[
+.B \-h
+]
+[
+.B \-i
+]
+[
+.B \-l
+.I n
+]
+[
+.B \-m
+.I n
+]
+[
+.B \-p
+.I permgpname
+]
+[
+.B \-s
+]
+[
+.B \-tt
+.I n
+]
+[
+.B \-ot
+.I n
+]
+[
+.B \-v
+]
+.B gpname1
+.B gpname2
+.SH DESCRIPTION
+.B findisoms
+attempts to find homomorphisms from one finitely presented group
+.I G
+to another
+.I H.
+Unlike some other Geometry Group programs, it never reads from standard input,
+since the required input varies greatly according to what options are used.
+Instead, it reads from existing files that contain the output of other
+programs, and outputs an error message if one of the required files does not
+exist. It is assumed that the defining presentation of
+.I G
+is in the file
+.I gpname1,
+and that of
+.I H
+is in the file
+.I gpname2.
+Before running
+.B findisoms,
+.B ordrels(1)
+with the
+.B \-g
+option
+and then
+.B kbeqn(1)
+with the
+.B \-o
+option
+should be run on both
+.I gpname1
+and 
+.I gpname2.
+It is essential that these two options are used, because this ensures that
+the same order of generators is used for the two groups throughout.
+.PP
+By default,
+.B findisoms
+looks only for isomorphisms from
+.I G
+to
+.I H.
+If the 
+.B \-e
+option is set, then it looks for all epimorphisms, and if the
+.B \-h
+option is set, it looks for all homomorphisms.
+Normally,
+.B findisoms
+only outputs maps that have been proved to be isomorphisms, by default,
+or epimorphisms if
+.B \-e
+is set. If the verbose option
+.B \-v
+is set, then it reports on some (but not all) other homomorphisms found.
+.PP
+.B findisoms
+looks for homomorphisms by searching through all possible images
+of the generators of
+.I G
+among the words in the generators of
+.I H,
+such that the sum of the lengths of these words is at most
+.I lengthsum.
+This and other parameters can be changed by using the interactive
+.B \-i
+option (see below), or by using the appropriate command-line options.
+Having found a homomorphism,
+.B findisoms
+attempts to prove it to be an epimorphism by searching for inverse images of
+the generators of
+.I H
+among words in the generators of
+.I G
+of length at most
+.I maxlength.
+If it fails, then this does not prove that the map is not an epimorphism,
+since the inverse images might have length greater than
+.I maxlength.
+Hence, the comment output is
+.IP
+# The map might not be an epimorphism.
+.PP
+If inverse images are found for all generators of
+.I H,
+then the map is an epimorphism, and
+.B findisoms
+attempts to prove that it is an isomorphism by checking that the relators of
+.I H
+are satisfied by the images of the generators of
+.I H
+in
+.I G
+under the inverse map. If this turns out to be the case, then it checks that
+the words in the generators of
+.I H
+that represent the images of the generators of
+.I G
+under the original map are mapped back onto the generators of
+.I G
+by the inverse map. If so, then the original map is an isomorphism. If
+either of these final two tests fail, then the map is probably not an
+isomorphism. (We cannot be absolutely certain unless
+.B kbeqn
+halted with finite confluent sets of reduction rules.)
+The comments output are therefore
+.IP
+# Reverse mapping does not appear to be a homomorphism.
+.PP
+and
+.IP
+# Reverse mapping does not appear to be inverse.
+.PP
+The input presentation for
+.I G
+is taken from the file \fIgpname1\fP.ordrels,
+and that for
+.I H
+from the file \fIgpname2\fP.ordrels.
+The word reduction algorithms for
+.I G
+and
+.I H
+are taken from the files
+\fIgpname1\fP.kbeqn and \fIgpname2\fP.kbeqn.
+.PP
+.SH OPTIONS
+.IP \fB\-a\fP
+Use information about the infinite abelian quotients of
+.I G
+and
+.I H.
+If the groups have torsion free abelian factors, then this usually results
+in the program running much faster, but first 
+.B abquot(1)
+must be run on the presentations of both
+.I G
+and
+.I H.
+This option is only implemented when we are looking for isomorphisms only,
+and so it is turned off if it is called with either
+.B \-e
+or
+.B \-h.
+.IP \fB\-e\fP
+Look for all epimorphisms from
+.I G
+to
+.I H
+.IP \fB\-h\fP
+Look for all homomorphisms from
+.I G
+to
+.I H
+.IP \fB\-i\fP
+Interactive mode. The program waits for a parameters section to be input at
+the terminal. The
+.I lengthsum
+and
+.I maxlength
+parameters may be reset in this way. The defaults are currently 30 and 5,
+respectively. Parameters entered in this way override any that are
+specified on the command-line.
+.IP \fB\-l
+.I n
+.br
+Sets the
+.I lengthsum
+parameter equal to
+.I n.
+.IP \fB\-m
+.I n
+.br
+Sets the
+.I maxlength
+parameter equal to
+.I n.
+.IP \fB\-tt
+.I n
+.br
+Causes the program to halt at the first reasonable opportunity after it has
+used 
+.I n
+second of usertime.
+.IP \fB\-ot
+.I n
+.br
+Causes the program to abandon the search for inverse images of the
+generators under any potential isomorphism at the first reasonable opportunity
+after
+.I n
+seconds of usertime have elapsed, and move on to examine the next potential
+isomorphism.
+.IP \fB\-p
+.I permgpname
+.br
+Use epimorphisms of the groups
+.I G
+and
+.I H
+onto a finite permutation group. Here
+.I permgpname
+must be one of the finite permutation groups in the directory PERMDIR (see
+.B permim(1)
+). If this is chosen wisely, then the program can be made to run
+several times faster in some cases. First,
+.B permim(1)
+must be run on the presentations for both
+.I G
+and
+.I H.
+This option is only implemented when we are looking for isomorphisms only,
+and so it is turned off if it is called with either
+.B \-e
+or
+.B \-h.
+.IP \fB\-s\fP
+Stop as soon as an isomorphism has been found (and proved to be an
+isomorphism).
+.IP \fB\-v\fP
+Verbose mode. Images of homomorphisms are output even if they turn out not to
+be isomorphisms (or epimorphisms if \fB\-e\fP is set). This is set
+automatically if the
+.I maxlength
+parameter is equal to 0, since no checks for epimorphism or isomorphism are
+carried out in this case.
+.SH SEE ALSO
+.B ordrels(1)
+.br
+.B kbeqn(1)
+.br
+.B abquot(1)
+.br
+.B permim(1)
+.br
+.B testisom(1)
+.SH DIAGNOSTICS
+Exit code is 0 if an isomorphism is found 1 if the program completes without
+finding an isomorphism, 2 if the program is unable to complete due to an
+error (such as bad data). The exit code 3 means that no isomorphism was found,
+even though all acceptable words in both groups were considered during the
+search. This does not in itself imply that the groups are not isomorphic, but
+it would do if we also knew that
+.B kbeqn
+had halted with a confluent set of equations on both groups.
+.PP
+An error message is written if one of the required input files does not
+exist or cannot be opened.
